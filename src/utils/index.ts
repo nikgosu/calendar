@@ -1,13 +1,4 @@
-interface Day {
-  day: number
-  dayOfWeek: string
-}
-
-interface Month {
-  month: number
-  monthName: string,
-  days: Day[],
-}
+import { Calendar, Day, Month, Year } from '../models'
 
 export const monthNames = [
   'January', 'February', 'March', 'April', 'May', 'June',
@@ -18,10 +9,10 @@ const generateCalendar = () => {
   const startYear = 2024;
   const endYear = 2030;
 
-  const calendar = [];
+  const calendar: Calendar = [];
 
   for (let year = startYear; year <= endYear; year++) {
-    const yearData = {
+    const yearData: Year = {
       year: year,
       months: [] as Month[],
     };

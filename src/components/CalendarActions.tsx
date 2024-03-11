@@ -32,7 +32,10 @@ const CalendarActions = () => {
     <ActionsContainer>
       <DateControllers>
         <Select>
-          <Option/>
+          <Option>111111111111</Option>
+          <Option>111111111111</Option>
+          <Option>111111111111</Option>
+          <Option>111111111111</Option>
         </Select>
         <MonthChangeButton/>
         <MonthChangeButton/>
