@@ -33,6 +33,7 @@ const generateCalendar = () => {
         monthData.days.push({
           day: day,
           dayOfWeek: dayOfWeek,
+          holidays: []
         });
       }
 

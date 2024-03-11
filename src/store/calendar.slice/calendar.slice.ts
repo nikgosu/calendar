@@ -40,8 +40,8 @@ export const CalendarSlice = createSlice({
             const temptMonth = months.find(monthsObject => monthsObject.month === holiday.month)
             const tempDay = temptMonth?.days.find(dayObject => dayObject.day === holiday.day)
 
-            if (tempDay) {
-              tempDay.holiday = holiday
+            if (tempDay && tempDay.holidays) {
+              tempDay.holidays = [ ...tempDay.holidays, holiday ]
             }
           })
 

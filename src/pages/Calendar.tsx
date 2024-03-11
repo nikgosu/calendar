@@ -7,15 +7,16 @@ import { useAppSelector } from '../hooks/redux'
 
 const Calendar = () => {
 
-  const { isLoading: isHolidaysLoading, data: holidaysResponse } = useFetchHolidaysQuery(2024)
+  const { isLoading: isHolidaysLoading, data: holidaysResponse } = useFetchHolidaysQuery(2025)
   const {setHolidays} = useActions()
   const {calendar} = useAppSelector(state => state.calendar)
 
   useEffect(() => {
-    holidaysResponse && setHolidays({year: 2024, holidays: holidaysResponse})
+    holidaysResponse && setHolidays({year: 2025, holidays: holidaysResponse})
   }, [holidaysResponse])
   useEffect(() => {
     if (calendar) {
+      console.log(calendar)
     }
   }, [calendar])
 
