@@ -32,37 +32,37 @@ export const CalendarSlice = createSlice({
   initialState,
   reducers: {
     setHolidays(state, action) {
-
-      const holidays: Holiday[] = action.payload.holidays.filter((holiday: Holiday) => holiday.global).map((holiday: Holiday) => {
-
-        const month = +holiday.date?.split('-')?.[1]
-        const day = +holiday.date?.split('-')?.[2]
-
-        return { ...holiday, month, day: day, id: nanoid() }
-      })
-
-      if (!holidays.length) {
-        return state
-      }
-
-      state.calendar = state.calendar.map(yearObject => {
-        if (yearObject.value === action.payload.year) {
-          const months = [...yearObject.months]
-
-          holidays.forEach((holiday) => {
-            const temptMonth = months.find(monthsObject => monthsObject.value === holiday.month)
-            const tempDay = temptMonth?.days.find(dayObject => dayObject.value === holiday.day)
-
-            if (tempDay && tempDay.holidays) {
-              tempDay.holidays = [ ...tempDay.holidays, holiday ]
-            }
-          })
-
-          return { ...yearObject, months }
-        } else {
-          return { ...yearObject }
-        }
-      })
+      state.calendar = state.calendar
+      // const holidays: Holiday[] = action.payload.holidays.filter((holiday: Holiday) => holiday.global).map((holiday: Holiday) => {
+      //
+      //   const month = +holiday.date?.split('-')?.[1]
+      //   const day = +holiday.date?.split('-')?.[2]
+      //
+      //   return { ...holiday, month, day: day, id: nanoid() }
+      // })
+      //
+      // if (!holidays.length) {
+      //   return state
+      // }
+      //
+      // state.calendar = state.calendar.map(yearObject => {
+      //   if (yearObject.value === action.payload.year) {
+      //     const months = [...yearObject.months]
+      //
+      //     holidays.forEach((holiday) => {
+      //       const temptMonth = months.find(monthsObject => monthsObject.value === holiday.month)
+      //       const tempDay = temptMonth?.days.find(dayObject => dayObject.value === holiday.day)
+      //
+      //       if (tempDay && tempDay.holidays) {
+      //         tempDay.holidays = [ ...tempDay.holidays, holiday ]
+      //       }
+      //     })
+      //
+      //     return { ...yearObject, months }
+      //   } else {
+      //     return { ...yearObject }
+      //   }
+      // })
     },
     setSelectedYear(state, action) {
       state.selectedYear = action.payload

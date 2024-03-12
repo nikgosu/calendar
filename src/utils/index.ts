@@ -8,45 +8,47 @@ export const monthNames = [
 
 const generateCalendar = (startYear: number, endYear: number) => {
 
-  const calendar: Calendar = [];
+  const calendar: any = {}
 
   for (let year = startYear; year <= endYear; year++) {
-    const yearData: Year = {
+    const yearData: any = {
       value: year,
-      months: [] as Month[],
-      id: nanoid()
+      months: {} as any,
     };
 
-    for (let month = 0; month < 12; month++) {
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const yearId = nanoid()
 
-      const monthData: Month = {
+    for (let month = 0; month < 12; month++) {
+      const daysInMonth = new Date(year, month + 1, 0).getDate()
+      const monthId = nanoid()
+
+      const monthData: any = {
         value: month + 1,
         monthName: monthNames[month],
-        days: [] as Day[],
-        id: nanoid(),
+        days: {} as any,
         yearValue: yearData.value,
-        yearId: yearData.id
+        yearId
       };
 
       for (let day = 1; day <= daysInMonth; day++) {
-        const date = new Date(year, month, day);
-        const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
+        const date = new Date(year, month, day)
+        const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' })
 
-        monthData.days.push({
+        const dayId = nanoid()
+
+        monthData.days[dayId] = {
           value: day,
           dayOfWeek: dayOfWeek,
           holidays: [],
-          id: nanoid(),
-          monthId: monthData.id,
-          yearId: yearData.id
-        });
+          monthId,
+          yearId
+        }
       }
 
-      yearData.months.push(monthData);
+      yearData.months[monthId] = monthData
     }
 
-    calendar.push(yearData);
+    calendar[yearId] = yearData
   }
 
   return calendar;
