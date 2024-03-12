@@ -6,17 +6,23 @@ interface TodosState {
   calendar: Calendar,
   selectedYear: number
   selectedMonth: number
+  selectedDay: number
   selectedView: SelectedView
   isHolidaysLoading: boolean
 }
 
-const currentYear = new Date().getFullYear()
-const endYear = 2030
+const currentDate: Date = new Date();
+const currentYear = currentDate.getFullYear()
+const startYear = currentYear - 1
+const endYear = currentYear + 5
+const currentMonth = currentDate.getMonth() + 1;
+const currentDay = currentDate.getDate();
 
 const initialState: TodosState = {
-  calendar: generateCalendar(currentYear, endYear),
+  calendar: generateCalendar(startYear, endYear),
   selectedYear: currentYear,
-  selectedMonth: 1,
+  selectedMonth: currentMonth,
+  selectedDay: currentDay,
   selectedView: SelectedView.MONTH,
   isHolidaysLoading: false
 }

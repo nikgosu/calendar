@@ -2,6 +2,8 @@ import React from 'react';
 import styled from 'styled-components'
 import ViewSwitcher from './ViewSwitcher'
 import DateControllers from './DateControllers'
+import { useAppSelector } from '../hooks/redux'
+import { monthNames } from '../utils'
 
 const ActionsContainer = styled.div`
     display: flex;
@@ -17,10 +19,12 @@ const DateTitle = styled.h2`
 
 const CalendarActions = () => {
 
+  const {selectedYear, selectedMonth} = useAppSelector(state => state.calendar)
+
   return (
     <ActionsContainer>
       <DateControllers/>
-      <DateTitle>March 2018</DateTitle>
+      <DateTitle>{monthNames[selectedMonth - 1]} {selectedYear}</DateTitle>
       <ViewSwitcher/>
     </ActionsContainer>
   );

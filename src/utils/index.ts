@@ -24,7 +24,9 @@ const generateCalendar = (startYear: number, endYear: number) => {
         value: month + 1,
         monthName: monthNames[month],
         days: [] as Day[],
-        id: nanoid()
+        id: nanoid(),
+        yearValue: yearData.value,
+        yearId: yearData.id
       };
 
       for (let day = 1; day <= daysInMonth; day++) {
@@ -35,7 +37,9 @@ const generateCalendar = (startYear: number, endYear: number) => {
           value: day,
           dayOfWeek: dayOfWeek,
           holidays: [],
-          id: nanoid()
+          id: nanoid(),
+          monthId: monthData.id,
+          yearId: yearData.id
         });
       }
 

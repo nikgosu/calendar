@@ -1,5 +1,7 @@
 export interface Day {
   id: string
+  monthId: string
+  yearId: string
   value: number
   dayOfWeek: string
   holidays?: Holiday[]
@@ -7,7 +9,9 @@ export interface Day {
 
 export interface Month {
   id: string
+  yearId: string
   value: number
+  yearValue: number
   monthName: string
   days: Day[]
 }

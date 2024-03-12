@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components'
 import MySelect from './UI/MySelect'
-import { DateControllersButton } from './UI/DateControllerButton'
 import { useAppSelector } from '../hooks/redux'
 import { useFetchHolidaysQuery } from '../store/calendar.api/calendar.api'
 import { useActions } from '../hooks/actions'
+import { DateControllersButton } from './UI/styledComponents/DateControllerButton'
 
 const MyControllers = styled.div`
     display: flex;

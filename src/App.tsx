@@ -2,14 +2,14 @@ import React from 'react';
 import './App.css';
 import { ThemeProvider } from 'styled-components'
 import { theme } from './styles/Theme'
-import Calendar from './components/Calendar'
+import Main from './components/Main'
 
 function App() {
 
   return (
     <div className="App">
       <ThemeProvider theme={theme}>
-        <Calendar/>
+        <Main/>
       </ThemeProvider>
     </div>
   );
