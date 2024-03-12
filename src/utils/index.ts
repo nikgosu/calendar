@@ -12,7 +12,7 @@ const generateCalendar = (startYear: number, endYear: number) => {
 
   for (let year = startYear; year <= endYear; year++) {
     const yearData: Year = {
-      year: year,
+      value: year,
       months: [] as Month[],
       id: nanoid()
     };
@@ -21,7 +21,7 @@ const generateCalendar = (startYear: number, endYear: number) => {
       const daysInMonth = new Date(year, month + 1, 0).getDate();
 
       const monthData: Month = {
-        month: month + 1,
+        value: month + 1,
         monthName: monthNames[month],
         days: [] as Day[],
         id: nanoid()
@@ -32,7 +32,7 @@ const generateCalendar = (startYear: number, endYear: number) => {
         const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' });
 
         monthData.days.push({
-          day: day,
+          value: day,
           dayOfWeek: dayOfWeek,
           holidays: [],
           id: nanoid()

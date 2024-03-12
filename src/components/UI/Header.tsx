@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components'
-import HeaderTitle from './UI/HeaderTitle'
+import HeaderTitle from './HeaderTitle';
 
 const MyHeader = styled.nav`
     display: flex;

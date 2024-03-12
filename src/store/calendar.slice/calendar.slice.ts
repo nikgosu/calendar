@@ -35,19 +35,17 @@ export const CalendarSlice = createSlice({
         return { ...holiday, month, day: day, id: nanoid() }
       })
 
-      console.log(holidays)
-
       if (!holidays.length) {
         return state
       }
 
       state.calendar = state.calendar.map(yearObject => {
-        if (yearObject.year === action.payload.year) {
+        if (yearObject.value === action.payload.year) {
           const months = [...yearObject.months]
 
           holidays.forEach((holiday) => {
-            const temptMonth = months.find(monthsObject => monthsObject.month === holiday.month)
-            const tempDay = temptMonth?.days.find(dayObject => dayObject.day === holiday.day)
+            const temptMonth = months.find(monthsObject => monthsObject.value === holiday.month)
+            const tempDay = temptMonth?.days.find(dayObject => dayObject.value === holiday.day)
 
             if (tempDay && tempDay.holidays) {
               tempDay.holidays = [ ...tempDay.holidays, holiday ]
@@ -66,17 +64,17 @@ export const CalendarSlice = createSlice({
     setNextMonth(state) {
       const nextMonth = state.selectedMonth + 1
 
-      if (nextMonth > 12 && state.selectedYear < endYear) {
+      if (state.selectedMonth === 12 && state.selectedYear < endYear) {
         state.selectedYear = state.selectedYear + 1
         state.selectedMonth = 1
-      } else if (nextMonth < 12 && state.selectedYear < endYear) {
+      } else if (state.selectedMonth < 13 && state.selectedYear < endYear) {
         state.selectedMonth = nextMonth
       }
     },
     setPrevMonth(state) {
       const prevMonth = state.selectedMonth - 1
 
-      if (prevMonth < 1 && currentYear > state.selectedYear) {
+      if (state.selectedMonth === 1 && state.selectedYear > currentYear ) {
         state.selectedYear = state.selectedYear - 1
         state.selectedMonth = 12
       } else if (prevMonth > 0) {

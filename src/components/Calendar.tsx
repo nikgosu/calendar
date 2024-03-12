@@ -1,6 +1,6 @@
 import React from 'react';
-import Header from '../components/Header'
 import CalendarActions from '../components/CalendarActions'
+import Header from '../components/UI/Header'
 
 const Calendar = () => {
 

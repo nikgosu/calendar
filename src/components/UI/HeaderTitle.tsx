@@ -11,7 +11,7 @@ const MyHeaderTitle = styled.div`
     cursor: pointer;
 `
 
-const HeaderTitle: React.FC<HeaderTitleProps> = ({ children }) => {
+const HeaderTitle = ({ children }: HeaderTitleProps) => {
   return (
     <MyHeaderTitle>{children}</MyHeaderTitle>
   );
