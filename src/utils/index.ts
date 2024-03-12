@@ -1,13 +1,12 @@
 import { Calendar, Day, Month, Year } from '../models'
+import { nanoid } from '@reduxjs/toolkit'
 
 export const monthNames = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-const generateCalendar = () => {
-  const startYear = 2024;
-  const endYear = 2030;
+const generateCalendar = (startYear: number, endYear: number) => {
 
   const calendar: Calendar = [];
 
@@ -15,6 +14,7 @@ const generateCalendar = () => {
     const yearData: Year = {
       year: year,
       months: [] as Month[],
+      id: nanoid()
     };
 
     for (let month = 0; month < 12; month++) {
@@ -24,6 +24,7 @@ const generateCalendar = () => {
         month: month + 1,
         monthName: monthNames[month],
         days: [] as Day[],
+        id: nanoid()
       };
 
       for (let day = 1; day <= daysInMonth; day++) {
@@ -33,7 +34,8 @@ const generateCalendar = () => {
         monthData.days.push({
           day: day,
           dayOfWeek: dayOfWeek,
-          holidays: []
+          holidays: [],
+          id: nanoid()
         });
       }
 

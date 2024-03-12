@@ -1,4 +1,5 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
+import { Holiday } from '../../models'
 export const calendarApi = createApi({
   reducerPath: 'calendar/api',
   tagTypes: ['Holidays'],
@@ -7,7 +8,7 @@ export const calendarApi = createApi({
   }),
   refetchOnFocus: true,
   endpoints: (build) => ({
-    fetchHolidays: build.query<any[], number>({
+    fetchHolidays: build.query<Holiday[], number>({
       query: (year: number) => `/${year}/UA`,
     })
   })
