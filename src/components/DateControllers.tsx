@@ -13,7 +13,7 @@ const MyControllers = styled.div`
 const DateControllers = () => {
   const { calendar, selectedYear, selectedMonth, selectedView } = useAppSelector(state => state.calendar)
   const { isLoading: isHolidaysLoading, data: holidaysResponse } = useFetchHolidaysQuery(selectedYear)
-  const { setHolidays, setSelectedYear, setPrevMonth, setNextMonth } = useActions()
+  const { setHolidays, setSelectedYear, setPrevMonth, setNextMonth, setDaysForView } = useActions()
 
   const handleYearSelect = (year: number) => {
     setSelectedYear(year)
@@ -30,6 +30,10 @@ const DateControllers = () => {
   useEffect(() => {
     holidaysResponse && setHolidays({ year: 2024, holidays: holidaysResponse })
   }, [holidaysResponse])
+
+  useEffect(() => {
+    calendar && setDaysForView()
+  }, [calendar, selectedYear, selectedMonth]);
 
   return (
     <MyControllers>

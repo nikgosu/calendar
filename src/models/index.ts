@@ -1,10 +1,15 @@
 export interface Day {
   id: string
   monthId: string
+  monthValue: number
   yearId: string
+  yearValue: number
   value: number
   dayOfWeek: string
-  holidays?: Holiday[]
+  holidays?: Holiday[],
+  isFirst: boolean
+  isLast: boolean
+  tasks: any
 }
 
 export interface Days {

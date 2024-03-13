@@ -7,7 +7,8 @@ interface TodosState {
   selectedYear: number
   selectedMonth: number
   selectedDay: number
-  selectedView: SelectedView
+  selectedView: SelectedView,
+  daysForView: any[]
 }
 
 const currentDate: Date = new Date();
@@ -19,10 +20,11 @@ const currentDay = currentDate.getDate();
 
 const initialState: TodosState = {
   calendar: generateCalendar(startYear, endYear),
-  selectedYear: currentYear,
+  selectedYear: currentYear -1,
   selectedMonth: currentMonth,
   selectedDay: currentDay,
   selectedView: SelectedView.MONTH,
+  daysForView: []
 }
 
 export const CalendarSlice = createSlice({
@@ -49,11 +51,21 @@ export const CalendarSlice = createSlice({
 
         if (holiday.month && holiday.day) {
           const tempDay = tempYear.months[holiday.month].days[holiday.day]
-          tempDay['holidays'] = [...tempDay.holidays, holiday]
+          tempDay.holidays = [...tempDay.holidays, holiday]
         }
       })
-
       state.calendar = tempCalendar
+    },
+    setDaysForView(state) {
+      const tempCalendar = structuredClone(current(state.calendar))
+      const selectedYear = state.selectedYear
+      const selectedMonth = state.selectedMonth
+
+      const currentMonthDays = Object.values(tempCalendar[selectedYear].months[selectedMonth]?.days ?? {})
+      const prevMonthDays = Object.values((tempCalendar[selectedYear].months[selectedMonth - 1]?.days ?? tempCalendar[selectedYear - 1]?.months?.[12]?.days) ?? {})
+      const nextMonthDays = Object.values((tempCalendar[selectedYear].months[selectedMonth + 1]?.days ?? tempCalendar[selectedYear + 1]?.months?.[1]?.days) ?? {})
+
+      state.daysForView = [...prevMonthDays, ...currentMonthDays, ...nextMonthDays]
     },
     setSelectedYear(state, action) {
       state.selectedYear = action.payload
@@ -64,7 +76,7 @@ export const CalendarSlice = createSlice({
       if (state.selectedMonth === 12 && state.selectedYear < endYear) {
         state.selectedYear = state.selectedYear + 1
         state.selectedMonth = 1
-      } else if (state.selectedMonth < 13 && state.selectedYear < endYear) {
+      } else if (state.selectedMonth < 12 && state.selectedYear <= endYear) {
         state.selectedMonth = nextMonth
       }
     },
