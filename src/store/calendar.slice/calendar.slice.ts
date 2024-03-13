@@ -49,7 +49,6 @@ export const CalendarSlice = createSlice({
 
         if (holiday.month && holiday.day) {
           const tempDay = tempYear.months[holiday.month].days[holiday.day]
-          console.log(tempYear.months[holiday.month])
           tempDay['holidays'] = [...tempDay.holidays, holiday]
         }
       })
