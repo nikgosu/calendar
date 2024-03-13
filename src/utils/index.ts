@@ -1,4 +1,4 @@
-import { Calendar, Day, Month, Year } from '../models'
+import { Calendar, Days, Holiday, Month, Months, Year } from '../models'
 import { nanoid } from '@reduxjs/toolkit'
 
 export const monthNames = [
@@ -6,49 +6,47 @@ export const monthNames = [
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
 
-const generateCalendar = (startYear: number, endYear: number) => {
+const generateCalendar = (startYear: number, endYear: number): Calendar => {
 
-  const calendar: any = {}
+  const calendar: Calendar = {}
 
   for (let year = startYear; year <= endYear; year++) {
-    const yearData: any = {
+    const yearData: Year = {
       value: year,
-      months: {} as any,
+      months: {} as Months,
+      id: nanoid()
     };
-
-    const yearId = nanoid()
 
     for (let month = 0; month < 12; month++) {
       const daysInMonth = new Date(year, month + 1, 0).getDate()
-      const monthId = nanoid()
 
-      const monthData: any = {
+      const monthData: Month = {
         value: month + 1,
         monthName: monthNames[month],
-        days: {} as any,
+        days: {} as Days,
         yearValue: yearData.value,
-        yearId
+        yearId: yearData.id,
+        id: nanoid()
       };
 
       for (let day = 1; day <= daysInMonth; day++) {
         const date = new Date(year, month, day)
         const dayOfWeek = date.toLocaleDateString('en-US', { weekday: 'short' })
 
-        const dayId = nanoid()
-
-        monthData.days[dayId] = {
+        monthData.days[day] = {
           value: day,
           dayOfWeek: dayOfWeek,
-          holidays: [],
-          monthId,
-          yearId
+          holidays: [] as Holiday[],
+          monthId: monthData.id,
+          yearId: yearData.id,
+          id: nanoid()
         }
       }
 
-      yearData.months[monthId] = monthData
+      yearData.months[month + 1] = monthData
     }
 
-    calendar[yearId] = yearData
+    calendar[yearData.value] = yearData
   }
 
   return calendar;

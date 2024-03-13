@@ -33,7 +33,7 @@ const DateControllers = () => {
 
   return (
     <MyControllers>
-      <MySelect onSelect={handleYearSelect} selectedOption={selectedYear} options={calendar}/>
+      <MySelect onSelect={handleYearSelect} selectedOption={selectedYear} options={Object.values(calendar)}/>
       <DateControllersButton onClick={() => handleMonthChangeClick()}>&#9652;</DateControllersButton>
       <DateControllersButton onClick={() => handleMonthChangeClick(true)}>&#9662;</DateControllersButton>
     </MyControllers>

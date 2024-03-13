@@ -1,4 +1,4 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
+import { createSlice, current, nanoid } from '@reduxjs/toolkit';
 import { Calendar, Holiday, SelectedView } from '../../models'
 import generateCalendar from '../../utils'
 
@@ -8,7 +8,6 @@ interface TodosState {
   selectedMonth: number
   selectedDay: number
   selectedView: SelectedView
-  isHolidaysLoading: boolean
 }
 
 const currentDate: Date = new Date();
@@ -24,7 +23,6 @@ const initialState: TodosState = {
   selectedMonth: currentMonth,
   selectedDay: currentDay,
   selectedView: SelectedView.MONTH,
-  isHolidaysLoading: false
 }
 
 export const CalendarSlice = createSlice({
@@ -32,37 +30,31 @@ export const CalendarSlice = createSlice({
   initialState,
   reducers: {
     setHolidays(state, action) {
-      state.calendar = state.calendar
-      // const holidays: Holiday[] = action.payload.holidays.filter((holiday: Holiday) => holiday.global).map((holiday: Holiday) => {
-      //
-      //   const month = +holiday.date?.split('-')?.[1]
-      //   const day = +holiday.date?.split('-')?.[2]
-      //
-      //   return { ...holiday, month, day: day, id: nanoid() }
-      // })
-      //
-      // if (!holidays.length) {
-      //   return state
-      // }
-      //
-      // state.calendar = state.calendar.map(yearObject => {
-      //   if (yearObject.value === action.payload.year) {
-      //     const months = [...yearObject.months]
-      //
-      //     holidays.forEach((holiday) => {
-      //       const temptMonth = months.find(monthsObject => monthsObject.value === holiday.month)
-      //       const tempDay = temptMonth?.days.find(dayObject => dayObject.value === holiday.day)
-      //
-      //       if (tempDay && tempDay.holidays) {
-      //         tempDay.holidays = [ ...tempDay.holidays, holiday ]
-      //       }
-      //     })
-      //
-      //     return { ...yearObject, months }
-      //   } else {
-      //     return { ...yearObject }
-      //   }
-      // })
+      const holidays: Holiday[] = action.payload.holidays.filter((holiday: Holiday) => holiday.global).map((holiday: Holiday) => {
+
+        const month = +holiday.date?.split('-')?.[1]
+        const day = +holiday.date?.split('-')?.[2]
+
+        return { ...holiday, month, day: day, id: nanoid() }
+      })
+
+      if (!holidays.length) {
+        return state
+      }
+
+      const tempCalendar = structuredClone(current(state.calendar))
+      const tempYear = tempCalendar[action.payload.year]
+
+      holidays.forEach((holiday) => {
+
+        if (holiday.month && holiday.day) {
+          const tempDay = tempYear.months[holiday.month].days[holiday.day]
+          console.log(tempYear.months[holiday.month])
+          tempDay['holidays'] = [...tempDay.holidays, holiday]
+        }
+      })
+
+      state.calendar = tempCalendar
     },
     setSelectedYear(state, action) {
       state.selectedYear = action.payload
@@ -80,7 +72,7 @@ export const CalendarSlice = createSlice({
     setPrevMonth(state) {
       const prevMonth = state.selectedMonth - 1
 
-      if (state.selectedMonth === 1 && state.selectedYear > currentYear ) {
+      if (state.selectedMonth === 1 && state.selectedYear > currentYear) {
         state.selectedYear = state.selectedYear - 1
         state.selectedMonth = 12
       } else if (prevMonth > 0) {

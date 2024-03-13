@@ -7,19 +7,31 @@ export interface Day {
   holidays?: Holiday[]
 }
 
+export interface Days {
+  [key: number]: Day
+}
+
 export interface Month {
   id: string
   yearId: string
   value: number
   yearValue: number
   monthName: string
-  days: Day[]
+  days: Days
+}
+
+export interface Months {
+  [key: number]: Month
 }
 
 export interface Year {
   id: string
   value: number
-  months: Month[]
+  months: Months
+}
+
+export interface Years {
+  [key: number]: Year
 }
 
 export interface Holiday {
@@ -42,4 +54,4 @@ export enum SelectedView {
   WEEK = 'Week'
 }
 
-export type Calendar = Year[]
+export type Calendar = Years
