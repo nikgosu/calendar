@@ -181,7 +181,7 @@ const Calendar = () => {
                                   :
                                   <></>
                             )}
-                            {provided.placeholder}
+                            {!!day.tasks.length && provided.placeholder}
                             {!!createdTask && day.id === createdTask.dayId && createdTask.isNew && (
                               <TaskForm
                                 task={createdTask}
