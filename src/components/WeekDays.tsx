@@ -1,5 +1,6 @@
 import React from 'react';
 import styled from 'styled-components'
+import { WEEKDAY_NAMES } from '../consts'
 
 const WeekDaysContainer = styled.div`
     display: flex;
@@ -16,13 +17,9 @@ const WeekDay = styled.div`
 const WeekDays = () => {
   return (
     <WeekDaysContainer>
-      <WeekDay>Sun</WeekDay>
-      <WeekDay>Mon</WeekDay>
-      <WeekDay>Tue</WeekDay>
-      <WeekDay>Wed</WeekDay>
-      <WeekDay>Thu</WeekDay>
-      <WeekDay>Fri</WeekDay>
-      <WeekDay>Sat</WeekDay>
+      {WEEKDAY_NAMES.map(weekDayName => (
+        <WeekDay key={weekDayName}>{weekDayName}</WeekDay>
+      ))}
     </WeekDaysContainer>
   );
 };

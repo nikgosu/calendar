@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import ViewSwitcher from './ViewSwitcher'
 import DateControllers from './DateControllers'
 import { useAppSelector } from '../hooks/redux'
-import { monthNames } from '../utils'
+import { MONTH_NAMES } from '../consts'
 
 const ActionsContainer = styled.div`
     display: flex;
@@ -15,6 +15,7 @@ const ActionsContainer = styled.div`
 const DateTitle = styled.h2`
     margin: 0;
     color: #383838;
+    font-size: 1.5rem;
 `
 
 const CalendarActions = () => {
@@ -24,7 +25,7 @@ const CalendarActions = () => {
   return (
     <ActionsContainer>
       <DateControllers/>
-      <DateTitle>{monthNames[selectedMonth - 1]} {selectedYear}</DateTitle>
+      <DateTitle>{MONTH_NAMES[selectedMonth - 1]} {selectedYear}</DateTitle>
       <ViewSwitcher/>
     </ActionsContainer>
   );
