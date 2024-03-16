@@ -155,6 +155,33 @@ export const CalendarSlice = createSlice({
       tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks = tasks.filter((task: any) => task.id !== action.payload.taskId)
       state.calendar = tempCalendar
     },
+    moveTask(state, action) {
+      const tempCalendar = structuredClone(current(state.calendar))
+      const fromDay = action.payload.fromDay
+      const toDay = action.payload.toDay
+
+      const fromDayTasks = tempCalendar[fromDay.yearValue].months[fromDay.monthValue].days[fromDay.dayValue].tasks
+      const toDayTasks = tempCalendar[toDay.yearValue].months[toDay.monthValue].days[toDay.dayValue].tasks
+      const droppedTask = fromDayTasks.find((task: any) => task.id === action.payload.taskId)
+      const filteredTasks = fromDayTasks.filter((task: any) => task.id !== action.payload.taskId)
+
+      if (fromDay.dayId !== toDay.dayId) {
+
+        const tasksBefore = toDayTasks.slice(0, action.payload.droppableIndex)
+        const tasksAfter = toDayTasks.slice(action.payload.droppableIndex, toDayTasks.length)
+
+        tempCalendar[fromDay.yearValue].months[fromDay.monthValue].days[fromDay.dayValue].tasks = filteredTasks
+        tempCalendar[toDay.yearValue].months[toDay.monthValue].days[toDay.dayValue].tasks = [...tasksBefore, droppedTask, ...tasksAfter]
+      } else {
+        const tasksBefore = filteredTasks.slice(0, action.payload.droppableIndex)
+        const tasksAfter = filteredTasks.slice(action.payload.droppableIndex, toDayTasks.length)
+
+        tempCalendar[fromDay.yearValue].months[fromDay.monthValue].days[fromDay.dayValue].tasks = [...tasksBefore, droppedTask, ...tasksAfter]
+      }
+
+      state.calendar = tempCalendar
+
+    }
   }
 })
 

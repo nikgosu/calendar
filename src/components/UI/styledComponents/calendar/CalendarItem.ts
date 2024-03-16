@@ -10,6 +10,8 @@ export const CalendarItem = styled.div<{$active: boolean}>`
     border-radius: 3px;
     overflow: auto;
     cursor: unset;
+    display: flex;
+    flex-direction: column;
 
     &::-webkit-scrollbar {
         display: none;

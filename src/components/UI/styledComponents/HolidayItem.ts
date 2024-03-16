@@ -7,6 +7,6 @@ export const HolidayItem = styled.div`
     border-radius: 3px;
     margin-bottom: 4px;
     color: #464646;
-    word-wrap: normal;
+    word-wrap: break-word;
     font-weight: 500;
 `
