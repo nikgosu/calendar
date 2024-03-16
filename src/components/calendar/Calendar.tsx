@@ -27,7 +27,7 @@ const TaskItem = styled.div`
 const DeleteTaskIcon = styled.span`
     position: absolute;
     top: 0;
-    RIGHT: 0;
+    right: 10px;
     transform: translateY(-50%) translateX(35%) rotate(45deg);
     color: red;
     font-size: 1rem;
@@ -39,6 +39,7 @@ const Calendar = () => {
 
   const [createdTask, setCreatedTask] = useState<any>(null)
   const [editedTask, setEditedTask] = useState<any>(null)
+  const [lastTap, setLastTap] = useState(0);
 
   const { addTask, editTask, deleteTask, moveTask } = useActions()
   const { daysForView, selectedMonth } = useAppSelector(state => state.calendar)
@@ -94,6 +95,14 @@ const Calendar = () => {
     moveTask({fromDay: JSON.parse(result.source.droppableId), toDay: JSON.parse(result.destination.droppableId), taskId: result.draggableId, droppableIndex: result.destination.index})
   }
 
+  const handleDoubleTap = (day: Day) => {
+    const now = Date.now();
+    if (now - lastTap < 300) {
+      handleTaskCreate(day);
+    }
+    setLastTap(now);
+  };
+
   const getDragDropObject = (day: Day) => {
     return JSON.stringify({
       yearValue: day.yearValue,
@@ -117,7 +126,7 @@ const Calendar = () => {
                     <CalendarItem
                       key={day.id}
                       $active={selectedMonth === day.monthValue}
-                      onDoubleClick={() => handleTaskCreate(day)}
+                      onClick={() => handleDoubleTap(day)}
                     >
                       <CalendarItemHeader
                         selectedMonth={selectedMonth}
@@ -130,7 +139,7 @@ const Calendar = () => {
                       >
                         {(provided) => (
                           <div
-                            style={{ flexGrow: 1, marginBottom: '30px' }}
+                            style={{ flexGrow: 1, marginBottom: '30px', padding: '0.4% 0.5%' }}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                           >
