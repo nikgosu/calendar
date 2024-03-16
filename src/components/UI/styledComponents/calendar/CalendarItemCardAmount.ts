@@ -8,4 +8,5 @@ export const CalendarItemCardAmount = styled.div`
     font-size: .75rem;
     color: #7a7a7a;
     line-height: 1;
+    margin-left: 4px;
 `

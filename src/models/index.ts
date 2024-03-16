@@ -1,15 +1,23 @@
-export interface Day {
-  id: string
-  monthId: string
-  monthValue: number
-  yearId: string
-  yearValue: number
-  value: number
-  dayOfWeek: string
-  holidays?: Holiday[],
-  isFirst: boolean
-  isLast: boolean
-  tasks: any
+export class Day {
+  id = ''
+  monthId = ''
+  monthValue = 1
+  yearId = ''
+  yearValue = 1
+  value = 1
+  dayOfWeek = ''
+  dayOfWeekNumber = 1
+  holidays?: Holiday[] = []
+  isFirst = false
+  isLast = false
+  tasks: any[] = []
+  disabled = false
+
+  constructor(isDisabled: boolean, id: string, monthValue: number) {
+    this.disabled = isDisabled
+    this.id = id
+    this.monthValue = monthValue
+  }
 }
 
 export interface Days {

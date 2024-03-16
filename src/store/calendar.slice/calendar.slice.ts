@@ -1,6 +1,7 @@
 import { createSlice, current, nanoid } from '@reduxjs/toolkit';
-import { Calendar, Holiday, SelectedView } from '../../models'
+import { Calendar, Day, Holiday, SelectedView } from '../../models'
 import generateCalendar from '../../utils'
+import { WEEKDAY_NAMES } from '../../consts'
 
 interface TodosState {
   calendar: Calendar,
@@ -13,18 +14,29 @@ interface TodosState {
 
 const currentDate: Date = new Date();
 const currentYear = currentDate.getFullYear()
-const startYear = currentYear - 1
+const startYear = currentYear - 3
 const endYear = currentYear + 5
 const currentMonth = currentDate.getMonth() + 1;
 const currentDay = currentDate.getDate();
 
 const initialState: TodosState = {
   calendar: generateCalendar(startYear, endYear),
-  selectedYear: currentYear -1,
+  selectedYear: currentYear,
   selectedMonth: currentMonth,
   selectedDay: currentDay,
   selectedView: SelectedView.MONTH,
   daysForView: []
+}
+
+const getGhostDays = (amount: number, monthValue: number) => {
+  return Array.from({ length: amount }, () => new Day(true, nanoid(), monthValue))
+}
+const splitDays = (originalArray: any, itemsPerSubarray: number) => {
+  let result = [];
+  for (let i = 0; i < originalArray.length; i += itemsPerSubarray) {
+    result.push(originalArray.slice(i, i + itemsPerSubarray));
+  }
+  return result;
 }
 
 export const CalendarSlice = createSlice({
@@ -32,6 +44,7 @@ export const CalendarSlice = createSlice({
   initialState,
   reducers: {
     setHolidays(state, action) {
+
       const holidays: Holiday[] = action.payload.holidays.filter((holiday: Holiday) => holiday.global).map((holiday: Holiday) => {
 
         const month = +holiday.date?.split('-')?.[1]
@@ -51,9 +64,13 @@ export const CalendarSlice = createSlice({
 
         if (holiday.month && holiday.day) {
           const tempDay = tempYear.months[holiday.month].days[holiday.day]
-          tempDay.holidays = [...tempDay.holidays, holiday]
+
+          if (!tempDay.holidays.length) {
+            tempDay.holidays = [...tempDay.holidays, holiday]
+          }
         }
       })
+
       state.calendar = tempCalendar
     },
     setDaysForView(state) {
@@ -61,11 +78,29 @@ export const CalendarSlice = createSlice({
       const selectedYear = state.selectedYear
       const selectedMonth = state.selectedMonth
 
-      const currentMonthDays = Object.values(tempCalendar[selectedYear].months[selectedMonth]?.days ?? {})
-      const prevMonthDays = Object.values((tempCalendar[selectedYear].months[selectedMonth - 1]?.days ?? tempCalendar[selectedYear - 1]?.months?.[12]?.days) ?? {})
-      const nextMonthDays = Object.values((tempCalendar[selectedYear].months[selectedMonth + 1]?.days ?? tempCalendar[selectedYear + 1]?.months?.[1]?.days) ?? {})
+      const currentMonthDays: Day[] = Object.values(tempCalendar[selectedYear].months[selectedMonth]?.days ?? {})
+      const prevMonthDays: Day[] = Object.values((tempCalendar[selectedYear].months[selectedMonth - 1]?.days ?? tempCalendar[selectedYear - 1]?.months?.[12]?.days) ?? {})
+      const nextMonthDays: Day[] = Object.values((tempCalendar[selectedYear].months[selectedMonth + 1]?.days ?? tempCalendar[selectedYear + 1]?.months?.[1]?.days) ?? {})
 
-      state.daysForView = [...prevMonthDays, ...currentMonthDays, ...nextMonthDays]
+      let tempDaysForView = [...currentMonthDays]
+
+      const missingDaysBeforeAmount = currentMonthDays[0]?.dayOfWeekNumber - 1
+      const missingDaysAfterAmount = 7 - currentMonthDays[currentMonthDays.length - 1]?.dayOfWeekNumber
+
+      if (missingDaysBeforeAmount) {
+        const missingDaysBefore = prevMonthDays.slice(prevMonthDays.length - missingDaysBeforeAmount)
+        const fillerDays = getGhostDays(missingDaysBeforeAmount, state.selectedMonth - 1)
+
+        tempDaysForView = [...(missingDaysBefore.length ? missingDaysBefore : fillerDays), ...tempDaysForView]
+      }
+
+      if (missingDaysAfterAmount) {
+        const missingDaysAfter = nextMonthDays.slice(0, missingDaysAfterAmount)
+        const fillerDays = getGhostDays(missingDaysAfterAmount, state.selectedMonth - 1)
+
+        tempDaysForView = [...tempDaysForView, ...(missingDaysAfter.length ? missingDaysAfter : fillerDays)]
+      }
+      state.daysForView = splitDays(tempDaysForView, 7)
     },
     setSelectedYear(state, action) {
       state.selectedYear = action.payload
@@ -81,9 +116,11 @@ export const CalendarSlice = createSlice({
       }
     },
     setPrevMonth(state) {
-      const prevMonth = state.selectedMonth - 1
 
-      if (state.selectedMonth === 1 && state.selectedYear > currentYear) {
+      const prevMonth = state.selectedMonth - 1
+      console.log(prevMonth)
+
+      if (state.selectedMonth === 1 && state.selectedYear > startYear) {
         state.selectedYear = state.selectedYear - 1
         state.selectedMonth = 12
       } else if (prevMonth > 0) {
@@ -92,7 +129,32 @@ export const CalendarSlice = createSlice({
     },
     setSelectedView(state, action) {
       state.selectedView = action.payload
-    }
+    },
+    addTask(state, action) {
+      const day = action.payload.day
+      const tempCalendar = structuredClone(current(state.calendar))
+      const tasks = tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks
+
+      tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks = [...tasks, action.payload.task]
+      state.calendar = tempCalendar
+    },
+    editTask(state, action) {
+      const day = action.payload.day
+      const tempCalendar = structuredClone(current(state.calendar))
+      const tasks = tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks
+      const updatedTasks = tasks.map((task: any) => task.id === action.payload.task.id ? action.payload.task : task)
+
+      tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks = updatedTasks
+      state.calendar = tempCalendar
+    },
+    deleteTask(state, action) {
+      const day = action.payload.day
+      const tempCalendar = structuredClone(current(state.calendar))
+      const tasks = tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks
+
+      tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks = tasks.filter((task: any) => task.id !== action.payload.taskId)
+      state.calendar = tempCalendar
+    },
   }
 })
 

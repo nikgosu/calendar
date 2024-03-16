@@ -1,38 +1,34 @@
 import styled from 'styled-components'
 
-export const CalendarContainer = styled.div`
-    flex: 1 1 auto;
+export const CalendarContainer = styled.div<{$isAnimateNext?: boolean, $isAnimatePrev?: boolean}>`
+    margin: 0;
+    overflow: hidden;
+    -webkit-box-flex: 1;
+    -webkit-flex: 1 1 0%;
+    flex: 1 1 0%;
+    display: -webkit-box;
+    display: -webkit-flex;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    padding: 0.2%;
-    overflow: auto;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    animation: ${props => props.$isAnimateNext ? 'animateNext' : props.$isAnimatePrev ? 'animatePrev' : ''} ease-in-out 0.5s;
     
-    &::-webkit-scrollbar {
-        width: 20px;
+    @keyframes animateNext {
+        from {
+            transform: translateY(0);
+        } 
+        to {
+            transform: translateY(-2%);
+        }
     }
-    
-    &::-webkit-scrollbar-track {
-        background-color: transparent;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-        background-color: #d6dee1;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-        background-color: #d6dee1;
-        border-radius: 20px;
-    }
-    
-    &::-webkit-scrollbar-thumb {
-        background-color: #d6dee1;
-        border-radius: 20px;
-        border: 6px solid transparent;
-        background-clip: content-box;
-    }
-    
-    &::-webkit-scrollbar-thumb:hover {
-        background-color: #a8bbbf;
+    @keyframes animatePrev {
+        from {
+            transform: translateY(0);
+        }
+        to {
+            transform: translateY(2%);
+        }
     }
 `

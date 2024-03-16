@@ -1,6 +1,6 @@
 import { Calendar, Days, Holiday, Month, Months, Year } from '../models'
 import { nanoid } from '@reduxjs/toolkit'
-import { MONTH_NAMES } from '../consts'
+import { MONTH_NAMES, WEEKDAY_NAMES } from '../consts'
 
 const generateCalendar = (startYear: number, endYear: number): Calendar => {
 
@@ -32,6 +32,7 @@ const generateCalendar = (startYear: number, endYear: number): Calendar => {
         monthData.days[day] = {
           value: day,
           dayOfWeek: dayOfWeek,
+          dayOfWeekNumber: WEEKDAY_NAMES.indexOf(dayOfWeek) + 1,
           holidays: [] as Holiday[],
           tasks: [] as any,
           monthId: monthData.id,
@@ -40,7 +41,8 @@ const generateCalendar = (startYear: number, endYear: number): Calendar => {
           yearValue: yearData.value,
           id: nanoid(),
           isFirst: day === 1,
-          isLast: day === daysInMonth
+          isLast: day === daysInMonth,
+          disabled: false
         }
       }
 

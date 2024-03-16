@@ -1,38 +1,39 @@
-import { useEffect, useRef, RefObject } from 'react';
+import { useEffect, RefObject } from 'react';
 
 interface UseScrollProps {
-  shouldRunObserver: boolean
-  parentRef: RefObject<HTMLDivElement>;
-  childRef: RefObject<HTMLDivElement>;
-  callback: () => void;
+  parentRef: RefObject<HTMLDivElement>
+  nextCallback: () => void
+  prevCallback: () => void
 }
 
-const useScroll = ({ shouldRunObserver, parentRef, childRef, callback }: UseScrollProps): void => {
-  const observer = useRef<IntersectionObserver | null>(null);
+const useScroll = ({ parentRef, nextCallback, prevCallback }: UseScrollProps): void => {
 
   useEffect(() => {
-    if (parentRef.current && childRef.current) {
-      const options = {
-        root: parentRef.current,
-        rootMargin: '0px',
-        threshold: 0,
-      };
+    const handleScroll = () => {
+      if (parentRef.current) {
+        const parentElement = parentRef.current;
+        const nextTriggerPosition = (parentElement.scrollHeight / 100 * 70) - parentElement.clientHeight
+        const prevTriggerPosition = parentElement.scrollHeight / 100 * 30
 
-      observer.current = new IntersectionObserver(([target]) => {
-        if (target.isIntersecting && shouldRunObserver) {
-          callback();
+        if (parentElement.scrollTop < prevTriggerPosition) {
+          prevCallback()
         }
-      }, options);
+        if (parentElement.scrollTop > nextTriggerPosition) {
+          nextCallback();
+        }
+      }
+    };
 
-      observer.current.observe(childRef.current);
+    if (parentRef.current) {
+      parentRef.current.addEventListener('scroll', handleScroll);
 
       return () => {
-        if (observer.current && childRef.current) {
-          observer.current.unobserve(childRef.current);
+        if (parentRef.current) {
+          parentRef.current.removeEventListener('scroll', handleScroll);
         }
       };
     }
-  }, [parentRef, childRef, callback]);
+  }, [parentRef, nextCallback, prevCallback]);
 };
 
 export default useScroll;
