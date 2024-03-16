@@ -41,7 +41,7 @@ const Calendar = () => {
   const [editedTask, setEditedTask] = useState<any>(null)
 
   const { addTask, editTask, deleteTask, moveTask } = useActions()
-  const { daysForView, selectedYear, selectedMonth } = useAppSelector(state => state.calendar)
+  const { daysForView, selectedMonth } = useAppSelector(state => state.calendar)
 
   const handleTaskCreate = (day: Day) => {
     !createdTask && setCreatedTask({
@@ -108,16 +108,16 @@ const Calendar = () => {
         <>
           <WeekDays/>
           <CalendarContainer>
-            {daysForView.map((row, ind: number) => (
-              <CalendarRow
-                key={row[0].id + row[0].monthValue}
-              >
-                <DragDropContext onDragEnd={onDragEnd}>
-                  {row.map((day: Day, ind: number) => (
+            <DragDropContext onDragEnd={onDragEnd}>
+              {daysForView.map((row: Day[]) => (
+                <CalendarRow
+                  key={row[0].id + row[0].monthValue}
+                >
+                  {row.map((day: Day) => (
                     <CalendarItem
                       key={day.id}
                       $active={selectedMonth === day.monthValue}
-                      onClick={() => handleTaskCreate(day)}
+                      onDoubleClick={() => handleTaskCreate(day)}
                     >
                       <CalendarItemHeader
                         selectedMonth={selectedMonth}
@@ -125,10 +125,10 @@ const Calendar = () => {
                       />
                       <HolidaysList holidays={day.holidays}/>
                       <Droppable
-                        key={ind}
+                        key={day.id}
                         droppableId={getDragDropObject(day)}
                       >
-                        {(provided, snapshot) => (
+                        {(provided) => (
                           <div
                             style={{ flexGrow: 1, marginBottom: '30px' }}
                             ref={provided.innerRef}
@@ -142,7 +142,7 @@ const Calendar = () => {
                                   draggableId={task.id}
                                   index={index}
                                 >
-                                  {(provided, snapshot) => (
+                                  {(provided) => (
                                     <TaskItem
                                       ref={provided.innerRef}
                                       {...provided.draggableProps}
@@ -150,7 +150,11 @@ const Calendar = () => {
                                       onClick={event => handleTaskEdit(event, task)}
                                       key={task?.id}
                                     >
-                                      <DeleteTaskIcon onClick={event => handleTaskDelete(event, day, task.id)}>+</DeleteTaskIcon>
+                                      <DeleteTaskIcon
+                                        onClick={event => handleTaskDelete(event, day, task.id)}
+                                      >
+                                        +
+                                      </DeleteTaskIcon>
                                       {task?.taskDescription}
                                     </TaskItem>
                                   )}
@@ -182,9 +186,9 @@ const Calendar = () => {
                       </Droppable>
                     </CalendarItem>
                   ))}
-                </DragDropContext>
-              </CalendarRow>
-            ))}
+                </CalendarRow>
+              ))}
+            </DragDropContext>
           </CalendarContainer>
         </>
       )}

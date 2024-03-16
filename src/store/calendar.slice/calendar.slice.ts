@@ -1,7 +1,6 @@
 import { createSlice, current, nanoid } from '@reduxjs/toolkit';
 import { Calendar, Day, Holiday, SelectedView } from '../../models'
 import generateCalendar from '../../utils'
-import { WEEKDAY_NAMES } from '../../consts'
 
 interface TodosState {
   calendar: Calendar,
@@ -118,7 +117,6 @@ export const CalendarSlice = createSlice({
     setPrevMonth(state) {
 
       const prevMonth = state.selectedMonth - 1
-      console.log(prevMonth)
 
       if (state.selectedMonth === 1 && state.selectedYear > startYear) {
         state.selectedYear = state.selectedYear - 1
