@@ -13,10 +13,15 @@ const Calendar = () => {
 
   const { filteredDaysForView, selectedMonth, prevSelectedMonth } = useAppSelector(state => state.calendar)
   const [isAnimate, setIsAnimate] = useState(false)
-  const { moveTask, setNextMonth } = useActions()
+  const [touchStartY, setTouchStartY] = useState<number | null>(null);
+  const [touchEndY, setTouchEndY] = useState<number | null>(null);
+
+  const { moveTask, setNextMonth, setPrevMonth } = useActions()
 
   const debouncedScrollDown = useDebounce(setNextMonth, 100)
-  const debouncedScrollUp = useDebounce(setNextMonth, 100)
+  const debouncedScrollUp = useDebounce(setPrevMonth, 100)
+  const debouncedSwipeUp = useDebounce(setNextMonth, 100)
+  const debouncedSwipeDown = useDebounce(setPrevMonth, 100)
 
   const handleWheel = (event: WheelEvent<HTMLDivElement>) => {
     if (event.deltaY < 0) {
@@ -36,6 +41,28 @@ const Calendar = () => {
       })
     }
   }, [])
+
+  const handleTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchStartY(e.touches[0].clientY);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent<HTMLDivElement>) => {
+    setTouchEndY(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStartY === null || touchEndY === null) return;
+
+    const diffY = touchStartY - touchEndY;
+
+    if (diffY > 50) {
+      debouncedSwipeUp()
+    } else if (diffY < -50) {
+      debouncedSwipeDown()
+    }
+    setTouchStartY(null);
+    setTouchEndY(null);
+  };
 
   useEffect(() => {
     if (isAnimate) {
@@ -59,6 +86,9 @@ const Calendar = () => {
         <>
           <WeekDays/>
           <CalendarContainer
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
             onWheel={handleWheel}
           >
             <DragDropContext onDragEnd={handleDragEnd}>
