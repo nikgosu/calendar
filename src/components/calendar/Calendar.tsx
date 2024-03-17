@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, WheelEvent } from 'react';
 import WeekDays from '../WeekDays'
 import { useAppSelector } from '../../hooks/redux'
 import { CalendarContainer } from '../UI/styledComponents/calendar/CalendarContainer'
@@ -7,14 +7,26 @@ import { Day } from '../../models'
 import { CalendarRow } from '../UI/styledComponents/calendar/CalendarRow'
 import { DragDropContext, DropResult } from 'react-beautiful-dnd'
 import CalendarItemComponent from './CalendarItemComponent'
+import useDebounce from '../../hooks/useDebounce'
 
 const Calendar = () => {
 
   const { filteredDaysForView, selectedMonth, prevSelectedMonth } = useAppSelector(state => state.calendar)
-  const [isAnimate, setIsAnimate] = useState(true)
-  const { moveTask } = useActions()
+  const [isAnimate, setIsAnimate] = useState(false)
+  const { moveTask, setNextMonth } = useActions()
 
-  const onDragEnd = useCallback((result: DropResult) => {
+  const debouncedScrollDown = useDebounce(setNextMonth, 100)
+  const debouncedScrollUp = useDebounce(setNextMonth, 100)
+
+  const handleWheel = (event: WheelEvent<HTMLDivElement>) => {
+    if (event.deltaY < 0) {
+      debouncedScrollUp()
+    } else if (event.deltaY > 0) {
+      debouncedScrollDown()
+    }
+  };
+
+  const handleDragEnd = useCallback((result: DropResult) => {
     if (result.destination) {
       moveTask({
         fromDay: JSON.parse(result.source.droppableId),
@@ -47,8 +59,9 @@ const Calendar = () => {
         <>
           <WeekDays/>
           <CalendarContainer
+            onWheel={handleWheel}
           >
-            <DragDropContext onDragEnd={onDragEnd}>
+            <DragDropContext onDragEnd={handleDragEnd}>
               {filteredDaysForView.map((row: Day[]) => (
                 <CalendarRow
                   key={row[0].id + row[0].monthId}

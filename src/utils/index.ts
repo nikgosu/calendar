@@ -77,7 +77,7 @@ export const getDaysForView = (prevMonthDays: Day[], currentMonthDays: Day[], ne
 export const getFilteredDaysForView = (daysForView: Day[][], query: string) => {
   return daysForView.map((week: Day[]) => week.map(day => ({
     ...day,
-    tasks: day.tasks.filter(task => task.taskDescription?.includes(query))
+    tasks: day.tasks.filter(task => task.taskDescription?.toLowerCase().includes(query.toLowerCase()))
   })));
 }
 
