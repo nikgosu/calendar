@@ -1,4 +1,4 @@
-import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
+import React, { ChangeEvent, KeyboardEvent, memo, useEffect, useRef, useState } from 'react';
 import { TaskInput } from './UI/styledComponents/tasks/TaskInput'
 import { TaskInputOverlay } from './UI/styledComponents/tasks/TaskInputOverlay'
 import { Day, Task } from '../models'
@@ -9,7 +9,7 @@ interface TaskFormProps {
   onInputChange: (value: string) => void
   onInputBlur: (day: Day) => void
 }
-const TaskForm = ({day, task, onInputChange, onInputBlur}: TaskFormProps) => {
+const TaskForm = memo(({day, task, onInputChange, onInputBlur}: TaskFormProps) => {
   const [value, setValue] = useState(task?.taskDescription ?? '')
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -56,6 +56,6 @@ const TaskForm = ({day, task, onInputChange, onInputBlur}: TaskFormProps) => {
       <TaskInputOverlay/>
     </>
   );
-};
+})
 
 export default TaskForm;

@@ -7,35 +7,14 @@ import { useActions } from '../../hooks/actions'
 import { nanoid } from '@reduxjs/toolkit'
 import { Day, Task } from '../../models'
 import CalendarItemHeader from './CalendarItemHeader'
-import styled from 'styled-components'
 import { CalendarRow } from '../UI/styledComponents/calendar/CalendarRow'
 import HolidaysList from './HolidaysLst'
 import TaskForm from '../TaskForm'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
 import { getDragDropInfoString } from '../../utils'
+import { TaskItem } from '../UI/styledComponents/tasks/TaskItem'
+import { DeleteTaskButton } from '../UI/styledComponents/tasks/DeleteTaskButton'
 
-const TaskItem = styled.div`
-    padding: 2px 4px;
-    font-size: 0.8rem;
-    background: #ffd6c7;
-    border-radius: 3px;
-    margin-bottom: 4px;
-    color: #464646;
-    font-weight: 500;
-    word-wrap: break-word;
-    position: relative;
-`
-const DeleteTaskIcon = styled.span`
-    position: absolute;
-    top: 0;
-    right: 10px;
-    transform: translateY(-50%) translateX(35%) rotate(45deg);
-    color: red;
-    font-size: 1rem;
-    user-select: none;
-    cursor: pointer;
-    z-index: 2;
-`
 const Calendar = () => {
 
   const [createdTask, setCreatedTask] = useState<Task | null>(null)
@@ -153,11 +132,11 @@ const Calendar = () => {
                                       onClick={event => handleTaskEdit(event, task)}
                                       key={task?.id}
                                     >
-                                      <DeleteTaskIcon
+                                      <DeleteTaskButton
                                         onClick={event => handleTaskDelete(event, day, task)}
                                       >
                                         +
-                                      </DeleteTaskIcon>
+                                      </DeleteTaskButton>
                                       {task?.taskDescription}
                                     </TaskItem>
                                   )}
