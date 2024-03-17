@@ -1,6 +1,5 @@
 import React, { ChangeEvent, KeyboardEvent, memo, useEffect, useRef, useState } from 'react';
 import { TaskInput } from './UI/styledComponents/tasks/TaskInput'
-import { TaskInputOverlay } from './UI/styledComponents/tasks/TaskInputOverlay'
 import { Day, Task } from '../models'
 
 interface TaskFormProps {
@@ -44,17 +43,14 @@ const TaskForm = memo(({day, task, onInputChange, onInputBlur}: TaskFormProps) =
   }, [value]);
 
   return (
-    <>
-      <TaskInput
-        ref={inputRef}
-        value={value}
-        onChange={event => handleValueChange(event)}
-        onBlur={() => onInputBlur(day)}
-        onKeyDown={event => handleKeyPress(event, day)}
-        onClick={event => event.stopPropagation()}
-      />
-      <TaskInputOverlay/>
-    </>
+    <TaskInput
+      ref={inputRef}
+      value={value}
+      onChange={event => handleValueChange(event)}
+      onBlur={() => onInputBlur(day)}
+      onKeyDown={event => handleKeyPress(event, day)}
+      onClick={event => event.stopPropagation()}
+    />
   );
 })
 

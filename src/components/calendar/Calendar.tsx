@@ -1,72 +1,20 @@
-import React, { MouseEvent, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import WeekDays from '../WeekDays'
 import { useAppSelector } from '../../hooks/redux'
 import { CalendarContainer } from '../UI/styledComponents/calendar/CalendarContainer'
-import { CalendarItem } from '../UI/styledComponents/calendar/CalendarItem'
 import { useActions } from '../../hooks/actions'
-import { nanoid } from '@reduxjs/toolkit'
-import { Day, Task } from '../../models'
-import CalendarItemHeader from './CalendarItemHeader'
+import { Day } from '../../models'
 import { CalendarRow } from '../UI/styledComponents/calendar/CalendarRow'
-import HolidaysList from './HolidaysLst'
-import TaskForm from '../TaskForm'
-import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
-import { getDragDropInfoString } from '../../utils'
-import { TaskItem } from '../UI/styledComponents/tasks/TaskItem'
-import { DeleteTaskButton } from '../UI/styledComponents/tasks/DeleteTaskButton'
+import { DragDropContext, DropResult } from 'react-beautiful-dnd'
+import CalendarItemComponent from './CalendarItemComponent'
 
 const Calendar = () => {
 
-  const [createdTask, setCreatedTask] = useState<Task | null>(null)
-  const [editedTask, setEditedTask] = useState<Task | null>(null)
-  const [lastTap, setLastTap] = useState(0);
+  const { filteredDaysForView, selectedMonth, prevSelectedMonth } = useAppSelector(state => state.calendar)
+  const [isAnimate, setIsAnimate] = useState(true)
+  const { moveTask } = useActions()
 
-  const { addTask, editTask, deleteTask, moveTask } = useActions()
-  const { filteredDaysForView, selectedMonth } = useAppSelector(state => state.calendar)
-
-  const handleTaskCreate = (day: Day) => {
-    !createdTask && setCreatedTask({
-      taskDescription: '',
-      id: nanoid(),
-      dayId: day.id,
-      dayValue: day.value,
-      monthValue: day.monthValue,
-      yearValue: day.yearValue,
-      isNew: true
-    })
-  }
-
-  const handleTaskDelete = (event: MouseEvent, day: Day, task: Task) => {
-    event.stopPropagation()
-    deleteTask({ day, task })
-  }
-  const handleCreatedTaskChange = (value: string) => {
-    createdTask && setCreatedTask({ ...createdTask, taskDescription: value })
-  }
-  const handleEditedTaskChange = (value: string) => {
-    editedTask && setEditedTask({ ...editedTask, taskDescription: value })
-  }
-  const handleCreatedTaskBlur = (day: Day) => {
-    if (createdTask?.taskDescription) {
-      addTask({ day, task: createdTask })
-    }
-    setCreatedTask(null)
-  }
-
-  const handleEditedTaskBlur = (day: Day) => {
-    if (editedTask?.taskDescription) {
-      setEditedTask(null)
-      editTask({ day, task: editedTask })
-    }
-    setEditedTask(null)
-  }
-
-  const handleTaskEdit = (event: MouseEvent, task: Task) => {
-    event.stopPropagation()
-    setEditedTask(task)
-  }
-
-  const onDragEnd = (result: DropResult) => {
+  const onDragEnd = useCallback((result: DropResult) => {
     if (result.destination) {
       moveTask({
         fromDay: JSON.parse(result.source.droppableId),
@@ -75,99 +23,43 @@ const Calendar = () => {
         droppableIndex: result.destination.index
       })
     }
-  }
+  }, [])
 
-  const handleDoubleTap = (day: Day) => {
-    const now = Date.now();
-    if (now - lastTap < 300) {
-      handleTaskCreate(day);
+  useEffect(() => {
+    if (isAnimate) {
+      const timeoutId = setTimeout(() => {
+        setIsAnimate(false)
+      }, 200)
+
+      return () => {
+        clearTimeout(timeoutId)
+      }
     }
-    setLastTap(now);
-  };
+  }, [isAnimate]);
+
+  useEffect(() => {
+    setIsAnimate(true)
+  }, [selectedMonth, prevSelectedMonth]);
+
   return (
     <>
       {filteredDaysForView.length && (
         <>
           <WeekDays/>
-          <CalendarContainer>
+          <CalendarContainer
+          >
             <DragDropContext onDragEnd={onDragEnd}>
               {filteredDaysForView.map((row: Day[]) => (
                 <CalendarRow
                   key={row[0].id + row[0].monthId}
+                  $isAnimateNext={prevSelectedMonth < selectedMonth && isAnimate}
+                  $isAnimatePrev={prevSelectedMonth > selectedMonth && isAnimate}
                 >
                   {row.map((day: Day) => (
-                    <CalendarItem
+                    <CalendarItemComponent
                       key={day.id}
-                      $active={selectedMonth === day.monthValue}
-                      onClick={() => handleDoubleTap(day)}
-                    >
-                      <CalendarItemHeader
-                        selectedMonth={selectedMonth}
-                        day={day}
-                      />
-                      <HolidaysList holidays={day.holidays}/>
-                      <Droppable
-                        key={day.id}
-                        droppableId={getDragDropInfoString(day)}
-                      >
-                        {(provided) => (
-                          <div
-                            style={{ flexGrow: 1, marginBottom: '30px', padding: '0.4% 0.5%' }}
-                            ref={provided.innerRef}
-                            {...provided.droppableProps}
-                          >
-                            {day.tasks.map((task: Task, index) =>
-                              editedTask?.id !== task.id
-                                ?
-                                <Draggable
-                                  key={task.id}
-                                  draggableId={task.id}
-                                  index={index}
-                                >
-                                  {(provided) => (
-                                    <TaskItem
-                                      ref={provided.innerRef}
-                                      {...provided.draggableProps}
-                                      {...provided.dragHandleProps}
-                                      onClick={event => handleTaskEdit(event, task)}
-                                      key={task?.id}
-                                    >
-                                      <DeleteTaskButton
-                                        onClick={event => handleTaskDelete(event, day, task)}
-                                      >
-                                        +
-                                      </DeleteTaskButton>
-                                      {task?.taskDescription}
-                                    </TaskItem>
-                                  )}
-                                </Draggable>
-                                :
-                                editedTask?.id === task.id
-                                  ?
-                                  <TaskForm
-                                    key={editedTask?.id}
-                                    task={editedTask}
-                                    day={day}
-                                    onInputChange={handleEditedTaskChange}
-                                    onInputBlur={handleEditedTaskBlur}
-                                  />
-                                  :
-                                  <></>
-                            )}
-                            {!!day.tasks.length && provided.placeholder}
-                            {!!createdTask && day.id === createdTask.dayId && createdTask.isNew && (
-                              <TaskForm
-                                task={createdTask}
-                                day={day}
-                                onInputChange={handleCreatedTaskChange}
-                                onInputBlur={handleCreatedTaskBlur}
-                              />
-                            )}
-                            {provided.placeholder}
-                          </div>
-                        )}
-                      </Droppable>
-                    </CalendarItem>
+                      day={day}
+                    />
                   ))}
                 </CalendarRow>
               ))}

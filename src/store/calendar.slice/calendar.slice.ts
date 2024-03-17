@@ -14,6 +14,7 @@ interface CalendarState {
   calendar: Calendar,
   selectedYear: number
   selectedMonth: number
+  prevSelectedMonth: number
   selectedDay: number
   selectedView: SELECTED_VIEW,
   daysForView: Day[][],
@@ -32,6 +33,7 @@ const initialState: CalendarState = {
   calendar: generateCalendar(startYear, endYear),
   selectedYear: currentYear,
   selectedMonth: currentMonth,
+  prevSelectedMonth: currentMonth,
   selectedDay: currentDay,
   selectedView: SELECTED_VIEW.MONTH,
   daysForView: [],
@@ -68,6 +70,8 @@ export const CalendarSlice = createSlice({
       const { selectedYear, selectedMonth } = state
       const nextMonth = selectedMonth + 1
 
+      state.prevSelectedMonth = selectedMonth === 12 ? 0 : selectedMonth
+
       if (state.selectedMonth === 12 && selectedYear < endYear) {
         state.selectedYear = selectedYear + 1
         state.selectedMonth = 1
@@ -78,6 +82,8 @@ export const CalendarSlice = createSlice({
     setPrevMonth(state) {
       const { selectedYear, selectedMonth } = state
       const prevMonth = state.selectedMonth - 1
+
+      state.prevSelectedMonth = selectedMonth === 1 ? 13 : selectedMonth
 
       if (selectedMonth === 1 && selectedYear > startYear) {
         state.selectedYear = selectedYear - 1

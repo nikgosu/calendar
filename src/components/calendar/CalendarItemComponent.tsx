@@ -1,4 +1,4 @@
-import React, { MouseEvent, useCallback, useState } from 'react';
+import React, { MouseEvent, useState } from 'react';
 import CalendarItemHeader from './CalendarItemHeader'
 import HolidaysList from './HolidaysLst'
 import { Draggable, Droppable } from 'react-beautiful-dnd'
@@ -11,6 +11,7 @@ import { CalendarItem } from '../UI/styledComponents/calendar/CalendarItem'
 import { useAppSelector } from '../../hooks/redux'
 import { nanoid } from '@reduxjs/toolkit'
 import { useActions } from '../../hooks/actions'
+import { TasksContainer } from '../UI/styledComponents/tasks/TasksContainer'
 
 interface CalendarItemComponentProps {
   day: Day
@@ -42,13 +43,13 @@ const CalendarItemComponent = ({day}: CalendarItemComponentProps) => {
     event.stopPropagation()
     deleteTask({ day, task })
   }
-  const handleCreatedTaskChange = useCallback((value: string) => {
+  const handleCreatedTaskChange = (value: string) => {
     createdTask && setCreatedTask({ ...createdTask, taskDescription: value })
-  }, [])
+  }
 
-  const handleEditedTaskChange = useCallback((value: string) => {
+  const handleEditedTaskChange = (value: string) => {
     editedTask && setEditedTask({ ...editedTask, taskDescription: value })
-  }, [])
+  }
 
   const handleCreatedTaskBlur = (day: Day) => {
     if (createdTask?.taskDescription) {
@@ -80,7 +81,6 @@ const CalendarItemComponent = ({day}: CalendarItemComponentProps) => {
 
   return (
     <CalendarItem
-      key={day.id}
       $active={selectedMonth === day.monthValue}
       onClick={() => handleDoubleTap(day)}
     >
@@ -94,8 +94,7 @@ const CalendarItemComponent = ({day}: CalendarItemComponentProps) => {
         droppableId={getDragDropInfoString(day)}
       >
         {(provided) => (
-          <div
-            style={{ flexGrow: 1, marginBottom: '30px', padding: '0.4% 0.5%' }}
+          <TasksContainer
             ref={provided.innerRef}
             {...provided.droppableProps}
           >
@@ -125,8 +124,7 @@ const CalendarItemComponent = ({day}: CalendarItemComponentProps) => {
                   )}
                 </Draggable>
                 :
-                editedTask?.id === task.id
-                  ?
+                editedTask?.id === task.id && (
                   <TaskForm
                     key={editedTask?.id}
                     task={editedTask}
@@ -134,10 +132,8 @@ const CalendarItemComponent = ({day}: CalendarItemComponentProps) => {
                     onInputChange={handleEditedTaskChange}
                     onInputBlur={handleEditedTaskBlur}
                   />
-                  :
-                  <></>
+                )
             )}
-            {!!day.tasks.length && provided.placeholder}
             {!!createdTask && day.id === createdTask.dayId && createdTask.isNew && (
               <TaskForm
                 task={createdTask}
@@ -147,7 +143,7 @@ const CalendarItemComponent = ({day}: CalendarItemComponentProps) => {
               />
             )}
             {provided.placeholder}
-          </div>
+          </TasksContainer>
         )}
       </Droppable>
     </CalendarItem>
