@@ -1,8 +1,8 @@
-import { Calendar, Days, Holiday, Month, Months, Year } from '../models'
+import { Calendar, Day, Days, Holiday, Month, Months, Task, Year } from '../models'
 import { nanoid } from '@reduxjs/toolkit'
 import { MONTH_NAMES, WEEKDAY_NAMES } from '../consts'
 
-const generateCalendar = (startYear: number, endYear: number): Calendar => {
+export const generateCalendar = (startYear: number, endYear: number): Calendar => {
 
   const calendar: Calendar = {}
 
@@ -34,7 +34,7 @@ const generateCalendar = (startYear: number, endYear: number): Calendar => {
           dayOfWeek: dayOfWeek,
           dayOfWeekNumber: WEEKDAY_NAMES.indexOf(dayOfWeek) + 1,
           holidays: [] as Holiday[],
-          tasks: [] as any,
+          tasks: [] as Task[],
           monthId: monthData.id,
           monthValue: monthData.value,
           yearId: yearData.id,
@@ -55,4 +55,13 @@ const generateCalendar = (startYear: number, endYear: number): Calendar => {
   return calendar;
 }
 
-export default generateCalendar
+export const getGhostDays = (amount: number, monthValue: number) => {
+  return Array.from({ length: amount }, () => new Day(true, nanoid(), monthValue))
+}
+export const getDaysRows = (arr: any[], daysPerRow: number) => {
+  let result = [];
+  for (let i = 0; i < arr.length; i += daysPerRow) {
+    result.push(arr.slice(i, i + daysPerRow));
+  }
+  return result;
+}

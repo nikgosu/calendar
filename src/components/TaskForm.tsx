@@ -1,17 +1,16 @@
 import React, { ChangeEvent, KeyboardEvent, useEffect, useRef, useState } from 'react';
 import { TaskInput } from './UI/styledComponents/tasks/TaskInput'
 import { TaskInputOverlay } from './UI/styledComponents/tasks/TaskInputOverlay'
-import { Day } from '../models'
+import { Day, Task } from '../models'
 
 interface TaskFormProps {
   day: Day
-  task: any
+  task: Task
   onInputChange: (value: string) => void
   onInputBlur: (day: Day) => void
 }
 const TaskForm = ({day, task, onInputChange, onInputBlur}: TaskFormProps) => {
-
-  const [value, setValue] = useState(task.taskDescription)
+  const [value, setValue] = useState(task?.taskDescription ?? '')
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const handleKeyPress = (event: KeyboardEvent, day: Day) => {

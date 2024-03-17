@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components'
-import { SelectedView } from '../models'
+import { SELECTED_VIEW } from '../models'
 import { useActions } from '../hooks/actions'
 import { DateControllersButton } from './UI/styledComponents/DateControllerButton'
 import { useAppSelector } from '../hooks/redux'
@@ -18,24 +18,24 @@ const ViewSwitcher = () => {
   const { setSelectedView } = useActions()
   const { selectedView } = useAppSelector(state => state.calendar)
 
-  const handleViewChange = (view: SelectedView) => {
+  const handleViewChange = (view: SELECTED_VIEW) => {
     setSelectedView(view)
   }
 
   return (
     <ViewTypeButtons>
       <DateControllersButton
-        onClick={() => handleViewChange(SelectedView.WEEK)}
+        onClick={() => handleViewChange(SELECTED_VIEW.WEEK)}
         $fontSize={'1rem'}
         $color={'#383838'}
-        $active={selectedView === SelectedView.WEEK}
-      >{SelectedView.WEEK}</DateControllersButton>
+        $active={selectedView === SELECTED_VIEW.WEEK}
+      >{SELECTED_VIEW.WEEK}</DateControllersButton>
       <DateControllersButton
-        onClick={() => handleViewChange(SelectedView.MONTH)}
+        onClick={() => handleViewChange(SELECTED_VIEW.MONTH)}
         $fontSize={'1rem'}
         $color={'#383838'}
-        $active={selectedView === SelectedView.MONTH}
-      >{SelectedView.MONTH}</DateControllersButton>
+        $active={selectedView === SELECTED_VIEW.MONTH}
+      >{SELECTED_VIEW.MONTH}</DateControllersButton>
     </ViewTypeButtons>
   );
 };

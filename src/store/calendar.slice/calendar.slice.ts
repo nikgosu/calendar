@@ -1,14 +1,15 @@
-import { createSlice, current, nanoid } from '@reduxjs/toolkit';
-import { Calendar, Day, Holiday, SelectedView } from '../../models'
-import generateCalendar from '../../utils'
+import { createSlice, current, nanoid, PayloadAction } from '@reduxjs/toolkit';
+import { Calendar, Day, Holiday, SELECTED_VIEW, Task } from '../../models'
+import { generateCalendar, getDaysRows, getGhostDays } from '../../utils'
+import { TaskActionsPayload, HolidaysPayload, TaskMovePayload } from '../models'
 
-interface TodosState {
+interface CalendarState {
   calendar: Calendar,
   selectedYear: number
   selectedMonth: number
   selectedDay: number
-  selectedView: SelectedView,
-  daysForView: any[]
+  selectedView: SELECTED_VIEW,
+  daysForView: Day[][]
 }
 
 const currentDate: Date = new Date();
@@ -18,31 +19,20 @@ const endYear = currentYear + 5
 const currentMonth = currentDate.getMonth() + 1;
 const currentDay = currentDate.getDate();
 
-const initialState: TodosState = {
+const initialState: CalendarState = {
   calendar: generateCalendar(startYear, endYear),
   selectedYear: currentYear,
   selectedMonth: currentMonth,
   selectedDay: currentDay,
-  selectedView: SelectedView.MONTH,
+  selectedView: SELECTED_VIEW.MONTH,
   daysForView: []
-}
-
-const getGhostDays = (amount: number, monthValue: number) => {
-  return Array.from({ length: amount }, () => new Day(true, nanoid(), monthValue))
-}
-const splitDays = (originalArray: any, itemsPerSubarray: number) => {
-  let result = [];
-  for (let i = 0; i < originalArray.length; i += itemsPerSubarray) {
-    result.push(originalArray.slice(i, i + itemsPerSubarray));
-  }
-  return result;
 }
 
 export const CalendarSlice = createSlice({
   name: 'calendar',
   initialState,
   reducers: {
-    setHolidays(state, action) {
+    setHolidays(state, action: PayloadAction<HolidaysPayload>) {
 
       const holidays: Holiday[] = action.payload.holidays.filter((holiday: Holiday) => holiday.global).map((holiday: Holiday) => {
 
@@ -73,6 +63,7 @@ export const CalendarSlice = createSlice({
       state.calendar = tempCalendar
     },
     setDaysForView(state) {
+
       const tempCalendar = structuredClone(current(state.calendar))
       const selectedYear = state.selectedYear
       const selectedMonth = state.selectedMonth
@@ -99,9 +90,9 @@ export const CalendarSlice = createSlice({
 
         tempDaysForView = [...tempDaysForView, ...(missingDaysAfter.length ? missingDaysAfter : fillerDays)]
       }
-      state.daysForView = splitDays(tempDaysForView, 7)
+      state.daysForView = getDaysRows(tempDaysForView, 7)
     },
-    setSelectedYear(state, action) {
+    setSelectedYear(state, action: PayloadAction<number>) {
       state.selectedYear = action.payload
     },
     setNextMonth(state) {
@@ -125,43 +116,46 @@ export const CalendarSlice = createSlice({
         state.selectedMonth = prevMonth
       }
     },
-    setSelectedView(state, action) {
+    setSelectedView(state, action: PayloadAction<SELECTED_VIEW>) {
       state.selectedView = action.payload
     },
-    addTask(state, action) {
+    addTask(state, action: PayloadAction<TaskActionsPayload>) {
+
       const day = action.payload.day
       const tempCalendar = structuredClone(current(state.calendar))
       const tasks = tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks
 
-      tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks = [...tasks, action.payload.task]
+      tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks = [...tasks, { ...action.payload.task, isNew: false }]
       state.calendar = tempCalendar
     },
-    editTask(state, action) {
+    editTask(state, action: PayloadAction<TaskActionsPayload>) {
+
       const day = action.payload.day
       const tempCalendar = structuredClone(current(state.calendar))
       const tasks = tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks
-      const updatedTasks = tasks.map((task: any) => task.id === action.payload.task.id ? action.payload.task : task)
+      const updatedTasks = tasks.map((task: Task) => task.id === action.payload.task.id ? action.payload.task : task)
 
       tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks = updatedTasks
       state.calendar = tempCalendar
     },
-    deleteTask(state, action) {
+    deleteTask(state, action: PayloadAction<TaskActionsPayload>) {
       const day = action.payload.day
       const tempCalendar = structuredClone(current(state.calendar))
       const tasks = tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks
 
-      tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks = tasks.filter((task: any) => task.id !== action.payload.taskId)
+      tempCalendar[day.yearValue].months[day.monthValue].days[day.value].tasks = tasks.filter((task: Task) => task.id !== action.payload.task.id)
       state.calendar = tempCalendar
     },
-    moveTask(state, action) {
+    moveTask(state, action: PayloadAction<TaskMovePayload>) {
+
       const tempCalendar = structuredClone(current(state.calendar))
       const fromDay = action.payload.fromDay
       const toDay = action.payload.toDay
 
       const fromDayTasks = tempCalendar[fromDay.yearValue].months[fromDay.monthValue].days[fromDay.dayValue].tasks
       const toDayTasks = tempCalendar[toDay.yearValue].months[toDay.monthValue].days[toDay.dayValue].tasks
-      const droppedTask = fromDayTasks.find((task: any) => task.id === action.payload.taskId)
-      const filteredTasks = fromDayTasks.filter((task: any) => task.id !== action.payload.taskId)
+      const droppedTask = fromDayTasks.find((task: Task) => task.id === action.payload.taskId)
+      const filteredTasks = fromDayTasks.filter((task: Task) => task.id !== action.payload.taskId)
 
       if (fromDay.dayId !== toDay.dayId) {
 
