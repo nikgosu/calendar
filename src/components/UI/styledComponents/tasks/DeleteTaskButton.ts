@@ -6,7 +6,7 @@ export const DeleteTaskButton = styled.span`
     right: 10px;
     transform: translateY(-50%) translateX(35%) rotate(45deg);
     color: red;
-    font-size: 1rem;
+    font-size: ${({theme}) => theme.text.standard};
     user-select: none;
     cursor: pointer;
     z-index: 2;

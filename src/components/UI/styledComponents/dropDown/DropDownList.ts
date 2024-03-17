@@ -7,9 +7,9 @@ export const DropDownList = styled.ul`
     background: #ffffff;
     border: 2px solid #e5e5e5;
     box-sizing: border-box;
-    color: #7a7a7a;
-    font-size: 1.1rem;
-    font-weight: 500;
+    color:  ${({theme}) => theme.colors.primary};
+    font-size:  ${({theme}) => theme.text.secondary};
+    font-weight: ${({theme}) => theme.weight.semiBold};
 
     &:first-child {
         padding-top: 0.6em;
