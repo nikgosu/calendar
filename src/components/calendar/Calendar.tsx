@@ -12,6 +12,7 @@ import { CalendarRow } from '../UI/styledComponents/calendar/CalendarRow'
 import HolidaysList from './HolidaysLst'
 import TaskForm from '../TaskForm'
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
+import { getDragDropInfoString } from '../../utils'
 
 const TaskItem = styled.div`
     padding: 2px 4px;
@@ -42,7 +43,7 @@ const Calendar = () => {
   const [lastTap, setLastTap] = useState(0);
 
   const { addTask, editTask, deleteTask, moveTask } = useActions()
-  const { daysForView, selectedMonth } = useAppSelector(state => state.calendar)
+  const { filteredDaysForView, selectedMonth } = useAppSelector(state => state.calendar)
 
   const handleTaskCreate = (day: Day) => {
     !createdTask && setCreatedTask({
@@ -104,23 +105,14 @@ const Calendar = () => {
     }
     setLastTap(now);
   };
-
-  const getDragDropObject = (day: Day) => {
-    return JSON.stringify({
-      yearValue: day.yearValue,
-      monthValue: day.monthValue,
-      dayValue: day.value,
-      dayId: day.id
-    })
-  }
   return (
     <>
-      {daysForView.length && (
+      {filteredDaysForView.length && (
         <>
           <WeekDays/>
           <CalendarContainer>
             <DragDropContext onDragEnd={onDragEnd}>
-              {daysForView.map((row: Day[]) => (
+              {filteredDaysForView.map((row: Day[]) => (
                 <CalendarRow
                   key={row[0].id + row[0].monthId}
                 >
@@ -137,7 +129,7 @@ const Calendar = () => {
                       <HolidaysList holidays={day.holidays}/>
                       <Droppable
                         key={day.id}
-                        droppableId={getDragDropObject(day)}
+                        droppableId={getDragDropInfoString(day)}
                       >
                         {(provided) => (
                           <div

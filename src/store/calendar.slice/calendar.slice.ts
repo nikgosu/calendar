@@ -3,7 +3,7 @@ import { Calendar, Day, Holiday, SELECTED_VIEW, Task } from '../../models'
 import {
   getComputedCalendar,
   getComputedHolidays,
-  getDaysForView,
+  getDaysForView, getFilteredDaysForView,
   getMonthDays,
   getTasks
 } from '../../utils'
@@ -16,7 +16,9 @@ interface CalendarState {
   selectedMonth: number
   selectedDay: number
   selectedView: SELECTED_VIEW,
-  daysForView: Day[][]
+  daysForView: Day[][],
+  filteredDaysForView: Day[][],
+  searchQuery: string
 }
 
 const currentDate: Date = new Date();
@@ -32,7 +34,9 @@ const initialState: CalendarState = {
   selectedMonth: currentMonth,
   selectedDay: currentDay,
   selectedView: SELECTED_VIEW.MONTH,
-  daysForView: []
+  daysForView: [],
+  filteredDaysForView: [],
+  searchQuery: ''
 }
 
 export const CalendarSlice = createSlice({
@@ -55,6 +59,7 @@ export const CalendarSlice = createSlice({
       const [prevMonthDays, currentMonthDays, nextMonthDays] = getMonthDays(structuredClone(current(state.calendar)), selectedYear, selectedMonth)
 
       state.daysForView = getDaysForView(prevMonthDays, currentMonthDays, nextMonthDays, selectedMonth, 7)
+      state.filteredDaysForView = getFilteredDaysForView(state.daysForView, state.searchQuery)
     },
     setSelectedYear(state, action: PayloadAction<number>) {
       state.selectedYear = action.payload
@@ -136,6 +141,10 @@ export const CalendarSlice = createSlice({
       }
 
       state.calendar = tempCalendar
+    },
+    filterTasks(state, action: PayloadAction<string>) {
+      state.searchQuery = action.payload;
+      state.filteredDaysForView = getFilteredDaysForView(structuredClone(current(state.daysForView)), action.payload)
     }
   }
 })

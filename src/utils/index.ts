@@ -73,3 +73,19 @@ export const getDaysForView = (prevMonthDays: Day[], currentMonthDays: Day[], ne
 
   return getDaysRows(tempDaysForView, daysPerRow)
 }
+
+export const getFilteredDaysForView = (daysForView: Day[][], query: string) => {
+  return daysForView.map((week: Day[]) => week.map(day => ({
+    ...day,
+    tasks: day.tasks.filter(task => task.taskDescription?.includes(query))
+  })));
+}
+
+export const getDragDropInfoString = (day: Day) => {
+  return JSON.stringify({
+    yearValue: day.yearValue,
+    monthValue: day.monthValue,
+    dayValue: day.value,
+    dayId: day.id
+  })
+}
