@@ -1,17 +1,9 @@
 import React from 'react';
-import styled from 'styled-components'
 import { SELECTED_VIEW } from '../models'
 import { useActions } from '../hooks/actions'
 import { DateControllersButton } from './UI/styledComponents/DateControllerButton'
 import { useAppSelector } from '../hooks/redux'
-
-const ViewTypeButtons = styled.div`
-    display: flex;
-
-    @media (max-width: 500px) {
-        flex-direction: column;
-    }
-`
+import { ViewTypeButtonsContainer } from './UI/styledComponents/ViewTypeButtonsContainer'
 
 const ViewSwitcher = () => {
 
@@ -23,7 +15,7 @@ const ViewSwitcher = () => {
   }
 
   return (
-    <ViewTypeButtons>
+    <ViewTypeButtonsContainer>
       <DateControllersButton
         onClick={() => handleViewChange(SELECTED_VIEW.WEEK)}
         $fontSize={'1rem'}
@@ -36,7 +28,7 @@ const ViewSwitcher = () => {
         $color={'#383838'}
         $active={selectedView === SELECTED_VIEW.MONTH}
       >{SELECTED_VIEW.MONTH}</DateControllersButton>
-    </ViewTypeButtons>
+    </ViewTypeButtonsContainer>
   );
 };
 

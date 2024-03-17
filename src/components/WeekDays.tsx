@@ -1,18 +1,7 @@
 import React from 'react';
-import styled from 'styled-components'
 import { WEEKDAY_NAMES } from '../consts'
-
-const WeekDaysContainer = styled.div`
-    display: flex;
-    padding: 0.5% 0;
-`
-
-const WeekDay = styled.div`
-    flex: 2 1 auto;
-    text-align: center;
-    color: #7a7a7a;
-    font-weight: bold;
-`
+import { WeekDaysContainer } from './UI/styledComponents/WeekDaysContainer'
+import { WeekDay } from './UI/styledComponents/WeekDay'
 
 const WeekDays = () => {
   return (

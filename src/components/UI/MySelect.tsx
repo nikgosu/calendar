@@ -1,15 +1,11 @@
 import React, { useState } from 'react';
-import styled from 'styled-components'
 import { DropDownContainer } from './styledComponents/dropDown/DropDownContainer'
 import { DropDownListItem } from './styledComponents/dropDown/DropDownListItem'
 import { DropDownListContainer } from './styledComponents/dropDown/DropDownListContainer'
 import { DropDownHeader } from './styledComponents/dropDown/DropDownHeader'
 import { DropDownList } from './styledComponents/dropDown/DropDownList'
 import { DropDownOverlay } from './styledComponents/dropDown/DropDownOverlay'
-
-const Main = styled.div`
-    background: #f0f0f0;
-`;
+import { DropDownWrapper } from './styledComponents/dropDown/DropDownWrapper'
 
 interface MySelectProps {
   selectedOption: any
@@ -27,7 +23,7 @@ const MySelect = ({ selectedOption, options, onSelect }: MySelectProps) => {
   };
 
   return (
-    <Main>
+    <DropDownWrapper>
       <DropDownContainer>
         <DropDownHeader onClick={toggling}>
           {selectedOption}
@@ -50,7 +46,7 @@ const MySelect = ({ selectedOption, options, onSelect }: MySelectProps) => {
       {isOpen && (
         <DropDownOverlay onClick={() => setIsOpen(false)}/>
       )}
-    </Main>
+    </DropDownWrapper>
   );
 };
 

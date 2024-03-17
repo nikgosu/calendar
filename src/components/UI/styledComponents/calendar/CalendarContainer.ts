@@ -4,8 +4,8 @@ export const CalendarContainer = styled.div<{$isAnimateNext?: boolean, $isAnimat
     margin: 0;
     overflow: hidden;
     -webkit-box-flex: 1;
-    -webkit-flex: 1 1 0%;
-    flex: 1 1 0%;
+    -webkit-flex: 1 1 0;
+    flex: 1 1 0;
     display: -webkit-box;
     display: -webkit-flex;
     display: flex;
@@ -13,22 +13,4 @@ export const CalendarContainer = styled.div<{$isAnimateNext?: boolean, $isAnimat
     -webkit-box-direction: normal;
     -webkit-flex-direction: column;
     flex-direction: column;
-    animation: ${props => props.$isAnimateNext ? 'animateNext' : props.$isAnimatePrev ? 'animatePrev' : ''} ease-in-out 0.5s;
-    
-    @keyframes animateNext {
-        from {
-            transform: translateY(0);
-        } 
-        to {
-            transform: translateY(-2%);
-        }
-    }
-    @keyframes animatePrev {
-        from {
-            transform: translateY(0);
-        }
-        to {
-            transform: translateY(2%);
-        }
-    }
 `

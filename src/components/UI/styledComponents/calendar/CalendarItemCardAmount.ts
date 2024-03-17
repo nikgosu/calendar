@@ -6,7 +6,7 @@ export const CalendarItemCardAmount = styled.div`
     flex-grow: 1;
     font-weight: bold;
     font-size: .75rem;
-    color: #7a7a7a;
+    color:  ${({theme}) => theme.colors.primary};
     line-height: 1;
     margin-left: 4px;
 `

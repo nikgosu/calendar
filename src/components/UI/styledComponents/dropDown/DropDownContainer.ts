@@ -12,7 +12,7 @@ export const DropDownContainer = styled.div`
         z-index: 2;
         font-size: 1.65rem;
         font-weight: bold;
-        color: #969b9b;
+        color:  ${({theme}) => theme.colors.lightGray};
         transform: translateY(-50%) rotate(90deg);
         pointer-events: none;
     }

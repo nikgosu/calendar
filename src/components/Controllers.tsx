@@ -1,4 +1,4 @@
-import React, { useEffect, useState, ChangeEvent } from 'react';
+import React, { useEffect, useState, ChangeEvent, useCallback } from 'react';
 import MySelect from './UI/MySelect'
 import { useAppSelector } from '../hooks/redux'
 import { useActions } from '../hooks/actions'
@@ -16,9 +16,9 @@ const Controllers = () => {
 
   const debouncedHandleSearch = useDebounce(filterTasks, 500)
 
-  const handleYearSelect = (year: number) => {
+  const handleYearSelect = useCallback((year: number) => {
     setSelectedYear(year)
-  }
+  }, [])
 
   const handleMonthChangeClick = (isNext = false) => {
     if (isNext) {

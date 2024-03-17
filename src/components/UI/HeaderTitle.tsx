@@ -1,15 +1,9 @@
 import React, { ReactNode } from 'react';
-import styled from 'styled-components'
+import { MyHeaderTitle } from './styledComponents/MyHeaderTitle'
 
 interface HeaderTitleProps {
   children: ReactNode;
 }
-
-const MyHeaderTitle = styled.div`
-    font-size: ${({theme}) => theme.text.title};
-    font-weight: ${({theme}) => theme.weight.bold};
-    cursor: pointer;
-`
 
 const HeaderTitle = ({ children }: HeaderTitleProps) => {
   return (

@@ -4,12 +4,12 @@ export const TaskInput = styled(TextareaAutosize)`
     position: relative;
     z-index: 4;
     width: -webkit-fill-available;
-    background: #d7d7d7;
+    background: ${({theme}) => theme.colors.inputBackground};
     border: none;
-    border-radius: 4px;
+    border-radius: ${({theme}) => theme.borders.dayItemRadius};
     outline: none;
-    color: #4b4b4b;
-    padding: 2px 4px;
+    color: ${({theme}) => theme.colors.inputColor};
+    padding: ${({theme}) => theme.offsets.dayItemPadding};
     resize: none;
-    margin-bottom: 4px;
+    margin-bottom: ${({theme}) => theme.offsets.dayItemMB};
 `
