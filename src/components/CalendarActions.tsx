@@ -1,22 +1,11 @@
 import React from 'react';
-import styled from 'styled-components'
 import ViewSwitcher from './ViewSwitcher'
-import DateControllers from './DateControllers'
+import Controllers from './Controllers'
 import { useAppSelector } from '../hooks/redux'
 import { MONTH_NAMES } from '../consts'
+import { DateTitle } from './UI/styledComponents/DateTitle'
+import { ActionsContainer } from './UI/styledComponents/ActionsContainer'
 
-const ActionsContainer = styled.div`
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.5% 1%;
-`
-
-const DateTitle = styled.h2`
-    margin: 0;
-    color: #383838;
-    font-size: 1.5rem;
-`
 
 const CalendarActions = () => {
 
@@ -24,7 +13,7 @@ const CalendarActions = () => {
 
   return (
     <ActionsContainer>
-      <DateControllers/>
+      <Controllers/>
       <DateTitle>{MONTH_NAMES[selectedMonth - 1]} {selectedYear}</DateTitle>
       <ViewSwitcher/>
     </ActionsContainer>

@@ -5,13 +5,14 @@ import { CalendarContainer } from '../UI/styledComponents/calendar/CalendarConta
 import { CalendarItem } from '../UI/styledComponents/calendar/CalendarItem'
 import { useActions } from '../../hooks/actions'
 import { nanoid } from '@reduxjs/toolkit'
-import { Day } from '../../models'
+import { Day, Task } from '../../models'
 import CalendarItemHeader from './CalendarItemHeader'
 import styled from 'styled-components'
 import { CalendarRow } from '../UI/styledComponents/calendar/CalendarRow'
 import HolidaysList from './HolidaysLst'
 import TaskForm from '../TaskForm'
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd'
+import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd'
+import { getDragDropInfoString } from '../../utils'
 
 const TaskItem = styled.div`
     padding: 2px 4px;
@@ -27,7 +28,7 @@ const TaskItem = styled.div`
 const DeleteTaskIcon = styled.span`
     position: absolute;
     top: 0;
-    RIGHT: 0;
+    right: 10px;
     transform: translateY(-50%) translateX(35%) rotate(45deg);
     color: red;
     font-size: 1rem;
@@ -37,11 +38,12 @@ const DeleteTaskIcon = styled.span`
 `
 const Calendar = () => {
 
-  const [createdTask, setCreatedTask] = useState<any>(null)
-  const [editedTask, setEditedTask] = useState<any>(null)
+  const [createdTask, setCreatedTask] = useState<Task | null>(null)
+  const [editedTask, setEditedTask] = useState<Task | null>(null)
+  const [lastTap, setLastTap] = useState(0);
 
   const { addTask, editTask, deleteTask, moveTask } = useActions()
-  const { daysForView, selectedMonth } = useAppSelector(state => state.calendar)
+  const { filteredDaysForView, selectedMonth } = useAppSelector(state => state.calendar)
 
   const handleTaskCreate = (day: Day) => {
     !createdTask && setCreatedTask({
@@ -55,69 +57,70 @@ const Calendar = () => {
     })
   }
 
-  const handleTaskDelete = (event: MouseEvent, day: Day, taskId: string) => {
+  const handleTaskDelete = (event: MouseEvent, day: Day, task: Task) => {
     event.stopPropagation()
-    deleteTask({ day, taskId })
+    deleteTask({ day, task })
   }
   const handleCreatedTaskChange = (value: string) => {
-    setCreatedTask({ ...createdTask, taskDescription: value })
+    createdTask && setCreatedTask({ ...createdTask, taskDescription: value })
   }
   const handleEditedTaskChange = (value: string) => {
-    setEditedTask({ ...editedTask, taskDescription: value })
+    editedTask && setEditedTask({ ...editedTask, taskDescription: value })
   }
   const handleCreatedTaskBlur = (day: Day) => {
-    if (createdTask.taskDescription === '') {
-      setCreatedTask(null)
-    } else {
-      const tempTask = { ...createdTask, isNew: false }
-
-      addTask({ day, task: tempTask })
-      setCreatedTask(null)
+    if (createdTask?.taskDescription) {
+      addTask({ day, task: createdTask })
     }
+    setCreatedTask(null)
   }
 
   const handleEditedTaskBlur = (day: Day) => {
-    if (editedTask.taskDescription === '') {
+    if (editedTask?.taskDescription) {
       setEditedTask(null)
-    } else {
       editTask({ day, task: editedTask })
-      setEditedTask(null)
     }
+    setEditedTask(null)
   }
 
-  const handleTaskEdit = (event: MouseEvent, task: any) => {
+  const handleTaskEdit = (event: MouseEvent, task: Task) => {
     event.stopPropagation()
     setEditedTask(task)
   }
 
-  const onDragEnd = (result: any) => {
-    moveTask({fromDay: JSON.parse(result.source.droppableId), toDay: JSON.parse(result.destination.droppableId), taskId: result.draggableId, droppableIndex: result.destination.index})
+  const onDragEnd = (result: DropResult) => {
+    if (result.destination) {
+      moveTask({
+        fromDay: JSON.parse(result.source.droppableId),
+        toDay: JSON.parse(result.destination.droppableId),
+        taskId: result.draggableId,
+        droppableIndex: result.destination.index
+      })
+    }
   }
 
-  const getDragDropObject = (day: Day) => {
-    return JSON.stringify({
-      yearValue: day.yearValue,
-      monthValue: day.monthValue,
-      dayValue: day.value,
-      dayId: day.id
-    })
-  }
+  const handleDoubleTap = (day: Day) => {
+    const now = Date.now();
+    if (now - lastTap < 300) {
+      handleTaskCreate(day);
+    }
+    setLastTap(now);
+  };
   return (
     <>
-      {daysForView.length && (
+      {filteredDaysForView.length && (
         <>
           <WeekDays/>
           <CalendarContainer>
             <DragDropContext onDragEnd={onDragEnd}>
-              {daysForView.map((row: Day[]) => (
+              {filteredDaysForView.map((row: Day[]) => (
                 <CalendarRow
-                  key={row[0].id + row[0].monthValue}
+                  key={row[0].id + row[0].monthId}
                 >
                   {row.map((day: Day) => (
                     <CalendarItem
                       key={day.id}
                       $active={selectedMonth === day.monthValue}
-                      onDoubleClick={() => handleTaskCreate(day)}
+                      onClick={() => handleDoubleTap(day)}
                     >
                       <CalendarItemHeader
                         selectedMonth={selectedMonth}
@@ -126,15 +129,15 @@ const Calendar = () => {
                       <HolidaysList holidays={day.holidays}/>
                       <Droppable
                         key={day.id}
-                        droppableId={getDragDropObject(day)}
+                        droppableId={getDragDropInfoString(day)}
                       >
                         {(provided) => (
                           <div
-                            style={{ flexGrow: 1, marginBottom: '30px' }}
+                            style={{ flexGrow: 1, marginBottom: '30px', padding: '0.4% 0.5%' }}
                             ref={provided.innerRef}
                             {...provided.droppableProps}
                           >
-                            {day.tasks.map((task: any, index) =>
+                            {day.tasks.map((task: Task, index) =>
                               editedTask?.id !== task.id
                                 ?
                                 <Draggable
@@ -151,7 +154,7 @@ const Calendar = () => {
                                       key={task?.id}
                                     >
                                       <DeleteTaskIcon
-                                        onClick={event => handleTaskDelete(event, day, task.id)}
+                                        onClick={event => handleTaskDelete(event, day, task)}
                                       >
                                         +
                                       </DeleteTaskIcon>
@@ -172,7 +175,7 @@ const Calendar = () => {
                                   :
                                   <></>
                             )}
-                            {provided.placeholder}
+                            {!!day.tasks.length && provided.placeholder}
                             {!!createdTask && day.id === createdTask.dayId && createdTask.isNew && (
                               <TaskForm
                                 task={createdTask}
@@ -181,6 +184,7 @@ const Calendar = () => {
                                 onInputBlur={handleCreatedTaskBlur}
                               />
                             )}
+                            {provided.placeholder}
                           </div>
                         )}
                       </Droppable>

@@ -10,7 +10,7 @@ export class Day {
   holidays?: Holiday[] = []
   isFirst = false
   isLast = false
-  tasks: any[] = []
+  tasks: Task[] = []
   disabled = false
 
   constructor(isDisabled: boolean, id: string, monthValue: number) {
@@ -62,7 +62,17 @@ export interface Holiday {
   day?: number
 }
 
-export enum SelectedView {
+export interface Task {
+  taskDescription?: string | undefined
+  id: string
+  dayId: string
+  dayValue: number
+  monthValue: number
+  yearValue: number
+  isNew: boolean
+}
+
+export enum SELECTED_VIEW {
   MONTH = 'Month',
   WEEK = 'Week'
 }
