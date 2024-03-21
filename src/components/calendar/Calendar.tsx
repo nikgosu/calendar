@@ -14,18 +14,7 @@ const Calendar = () => {
   const { filteredDaysForView, selectedMonth, prevSelectedMonth } = useAppSelector(state => state.calendar)
   const [isAnimate, setIsAnimate] = useState(false)
 
-  const { moveTask, setNextMonth, setPrevMonth } = useActions()
-
-  const debouncedScrollDown = useDebounce(setNextMonth, 100)
-  const debouncedScrollUp = useDebounce(setPrevMonth, 100)
-
-  const handleWheel = (event: WheelEvent<HTMLDivElement>) => {
-    if (event.deltaY < 0) {
-      debouncedScrollUp()
-    } else if (event.deltaY > 0) {
-      debouncedScrollDown()
-    }
-  };
+  const { moveTask } = useActions()
 
   const handleDragEnd = useCallback((result: DropResult) => {
     if (result.destination) {
@@ -60,7 +49,6 @@ const Calendar = () => {
         <>
           <WeekDays/>
           <CalendarContainer
-            onWheel={handleWheel}
           >
             <DragDropContext onDragEnd={handleDragEnd}>
               {filteredDaysForView.map((row: Day[]) => (
